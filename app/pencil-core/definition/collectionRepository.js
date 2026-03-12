@@ -56,8 +56,7 @@ CollectionRepository.getCollectionRepos = function () {
 };
 
 CollectionRepository.loadCollections = function(url) {
-    return QP.Promise(function(resolve, reject) {
-
+    return (async function() {
         var nugget = require("nugget");
         var tempDir = tmp.dirSync({ keep: false, unsafeCleanup: true }).name;
         var filename = "repository-" + new Date().getTime() + ".xml";
@@ -69,26 +68,35 @@ CollectionRepository.loadCollections = function(url) {
             quiet: true
         };
 
-        nugget(url || STENCILS_REPO_URL, nuggetOpts, function (errors) {
-            if (errors) {
-                var error = errors[0] // nugget returns an array of errors but we only need 1st because we only have 1 url
-                if (error.message.indexOf('404') === -1) {
-                    Dialog.error(`Can not download stencil repository file: ${error.message}`);
-                    return reject(error);
-                }
-                Dialog.error(`Failed to download repository at ${url}`);
-                return reject(error);
-            }
+        try {
+            await new Promise(function(resolve, reject) {
+                nugget(url || STENCILS_REPO_URL, nuggetOpts, function(errors) {
+                    if (errors) {
+                        var error = errors[0];
+                        if (error.message.indexOf('404') === -1) {
+                            Dialog.error(`Can not download stencil repository file: ${error.message}`);
+                            return reject(error);
+                        }
+                        Dialog.error(`Failed to download repository at ${url}`);
+                        return reject(error);
+                    }
+                    resolve();
+                });
+            });
 
             var filepath = path.join(tempDir, filename);
             console.log('repo downloaded', filepath);
 
-            CollectionRepository.parseFile(filepath, (data) => {
-                resolve(data);
+            var data = await new Promise(function(resolve) {
+                CollectionRepository.parseFile(filepath, (data) => {
+                    resolve(data);
+                });
             });
-        });
-
-    });
+            return data;
+        } catch (err) {
+            throw err;
+        }
+    })();
 };
 CollectionRepository.parseFile = function(url, callback) {
     try {

@@ -19,16 +19,18 @@ BaseCmdCaptureService.prototype = new BaseCaptureService();
 
 BaseCmdCaptureService.prototype.capture = function (options) {
     var thiz = this;
-    return new Promise(function (resolve, reject) {
+    return (async function() {
         var cmd = thiz.buildCommandLine(options);
-        require("child_process").execFile(cmd.path, cmd.args, function (error) {
-            if (error) {
-                reject(error);
-            } else {
-                resolve();
-            }
+        await new Promise(function(resolve, reject) {
+            require("child_process").execFile(cmd.path, cmd.args, function (error) {
+                if (error) {
+                    reject(error);
+                } else {
+                    resolve();
+                }
+            });
         });
-    });
+    })();
 };
 
 

@@ -341,15 +341,7 @@ CollectionManager.findDefinitionFile = function(dir) {
     return null;
 };
 CollectionManager.extractCollection = function(file, callback) {
-
-    return QP.Promise(function(resolve, reject) {
-        function error(err) {
-            if (callback) {
-                callback(err);
-            }
-            reject(err);
-        }
-
+    return (async function() {
         var filePath = file.path;
         var fileName = file.name.replace(/\.[^\.]+$/, "") + "_" + Math.ceil(Math.random() * 1000) + "_" + (new Date().getTime());
 
@@ -359,35 +351,23 @@ CollectionManager.extractCollection = function(file, callback) {
         var admZip = require('adm-zip');
 
         var zip = new admZip(filePath);
-        zip.extractAllToAsync(targetDir, true, function (err) {
-            if (err) {
-                error(err);
-                setTimeout(function() {
-                    CollectionManager.removeCollectionDir(targetDir);
-                }, 10);
-            } else {
-                resolve(targetDir);
-            }
-        });
-
-        // var extractor = unzip.Extract({ path: targetDir });
-        // extractor.on("close", function () {
-        //     if (callback) {
-        //         callback(err);
-        //     }
-        //     resolve(targetDir);
-        // });
-        // extractor.on("error", (err) => {
-        //     console.log("extract error", err);
-        //     error(err);
-
-        //     setTimeout(function() {
-        //         CollectionManager.removeCollectionDir(targetDir);
-        //     }, 10);
-        // });
-
-        // fs.createReadStream(filePath).pipe(extractor);
-    });
+        
+        try {
+            await new Promise(function(resolve, reject) {
+                zip.extractAllToAsync(targetDir, true, function(err) {
+                    if (err) reject(err);
+                    else resolve();
+                });
+            });
+            return targetDir;
+        } catch (err) {
+            if (callback) callback(err);
+            setTimeout(function() {
+                CollectionManager.removeCollectionDir(targetDir);
+            }, 10);
+            throw err;
+        }
+    })();
 };
 CollectionManager.installCollectionFonts = function (collection) {
     if (!collection.fonts || collection.fonts.length == 0) {
@@ -440,10 +420,10 @@ CollectionManager.installCollectionFonts = function (collection) {
     }
 };
 CollectionManager.installCollection = function(targetDir, callback) {
-    return QP.Promise(function(resolve, reject) {
+    return (async function() {
         try {
             var definitionFile = CollectionManager.findDefinitionFile(targetDir);
-            if (!definitionFile) throw Util.getMessage("collection.specification.is.not.found.in.the.archive");
+            if (!definitionFile) throw new Error(Util.getMessage("collection.specification.is.not.found.in.the.archive"));
 
             var parser = new ShapeDefCollectionParser();
             var collection = parser.parseURL(definitionFile);
@@ -453,7 +433,7 @@ CollectionManager.installCollection = function(targetDir, callback) {
                 for (i in CollectionManager.shapeDefinition.collections) {
                     var existingCollection = CollectionManager.shapeDefinition.collections[i];
                     if (existingCollection.id == collection.id) {
-                        throw Util.getMessage("collection.named.already.installed", collection.id);
+                        throw new Error(Util.getMessage("collection.named.already.installed", collection.id));
                     }
                 }
                 collection.userDefined = true;
@@ -471,19 +451,19 @@ CollectionManager.installCollection = function(targetDir, callback) {
                 if (callback) {
                     callback(collection);
                 }
-                resolve(collection);
+                return collection;
             } else {
-                throw Util.getMessage("collection.specification.is.not.found.in.the.archive");
+                throw new Error(Util.getMessage("collection.specification.is.not.found.in.the.archive"));
             }
         } catch (err) {
             console.log("install error", err);
             if (callback) {
                 callback(err);
             }
-            reject(err);
             CollectionManager.removeCollectionDir(targetDir);
+            throw err;
         }
-    });
+    })();
 };
 CollectionManager.installCollectionFromFile = function (file, callback) {
 
