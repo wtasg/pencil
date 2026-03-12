@@ -68,3 +68,49 @@ This removes the `node-gyp` → `tar` vulnerability chain.
 - electron-builder: https://github.com/electron-userland/electron-builder
 - electron-forge: https://github.com/electron-forge/electron-forge
 - @electron/rebuild: https://github.com/electron/rebuild
+
+---
+
+## Q Promise Replacement
+
+### Problem
+- `q@2.0.3` is deprecated (npm warning)
+- Q gave developers strong feelings about promises
+- Modern JavaScript has native Promise support
+
+### Usage in Code
+Q is used in 3 files with this pattern:
+```javascript
+QP.Promise(function(resolve, reject) {
+    // async work
+    resolve(result);
+    // or reject(error);
+})
+```
+
+Files using Q:
+- `app/pencil-core/definition/collectionManager.js` (2 places)
+- `app/pencil-core/definition/collectionRepository.js` (1 place)
+
+### Solution
+Create a Q-compatible shim using native Promises:
+1. Create `app/lib/q-shim.js` that provides `Q.Promise` interface
+2. Replace `require("q")` with local shim in `app/app.js`
+3. Write tests to verify compatibility
+
+### Tasks
+- [x] Document Q usage
+- [x] Create q-shim.js
+- [x] Update app.js to use shim
+- [x] Write tests
+- [x] Run tests
+- [x] Remove q dependency
+
+### Status: Complete
+
+- Created `app/lib/q-shim.js` with Q-compatible API
+- Created `tests/q.test.js` with 10 tests
+- Updated `app/app.js` to use shim
+- Removed deprecated `q` package
+- No more "q@2.0.3" npm warning
+- All 25 tests passing
