@@ -17,14 +17,19 @@ Config.getDataFilePath = function (name) {
 Config._save = function () {
     fs.writeFileSync(Config.getDataFilePath(Config.CONFIG_FILE_NAME), JSON.stringify(Config.data, null, 4), "utf8");
 };
-Config._load = function () {
-    try {
-        var json = fs.readFileSync(Config.getDataFilePath(Config.CONFIG_FILE_NAME), "utf8");
-        Config.data = JSON.parse(json);
-    } catch (e) {
-        console.error(e);
+try {
+    var dataPath = Config.getDataPath();
+    if (!fs.existsSync(dataPath)) {
+        fs.mkdirSync(dataPath, { recursive: true });
     }
-};
+    var configFilePath = Config.getDataFilePath(Config.CONFIG_FILE_NAME);
+    if (fs.existsSync(configFilePath)) {
+        var json = fs.readFileSync(configFilePath, "utf8");
+        Config.data = JSON.parse(json);
+    }
+} catch (e) {
+    console.warn("Failed to load config:", e.message);
+}
 
 Config.set = function (name, value) {
     Config.data[name] = value;
@@ -43,15 +48,6 @@ Config.getLocale = function () {
 Config.registerEvent = function () {
 
 }
-
-try {
-    fs.mkdirSync(Config.getDataPath());
-} catch(e) {
-    if ( e.code != 'EEXIST' ) throw e;
-}
-
-Config._load();
-
 
 
 //Specific configuration schema management

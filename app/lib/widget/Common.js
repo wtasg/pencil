@@ -14,7 +14,7 @@ function __extend() {
 
     __widgetClasses.push(sub);
 
-    var templatePath = path.dirname(document.currentScript.src);
+    var templatePath = document.currentScript ? path.dirname(document.currentScript.src) : null;
     if (templatePath && /views\/(.*)$/ig.exec(templatePath)) {
         sub.__templatePath = RegExp.$1;
     }

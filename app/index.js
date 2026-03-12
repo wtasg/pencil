@@ -50,16 +50,12 @@ function createWindow() {
         title: pkg.name,
         autoHideMenuBar: true,
         webPreferences: {
-          webSecurity: false,
-          allowRunningInsecureContent: true,
-          allowDisplayingInsecureContent: true,
+          webSecurity: true,
           defaultEncoding: "UTF-8",
           nodeIntegration: true,
           contextIsolation: false,
           enableRemoteModule: true,
-          experimentalFeatures: true,
-          disableDialogs: true,
-          enableBlinkFeatures: "FontAccess"
+          sandbox: false
         },
     };
 

@@ -3,8 +3,8 @@
   "devDependencies": {
     "electron": "16.0.0",
     "electron-builder": "23.3.3",
-    "electron-rebuild": "^1.8.5",
-    "rimraf": "^2.5.4"
+    "electron-rebuild": "^1.11.0",
+    "rimraf": "^2.7.1"
   },
   "build": {
     "appId": "vn.evolus.pencil",
@@ -12,10 +12,14 @@
     "copyright": "Copyright © 2008-2016 Evolus. All rights reserved.",
     "mac": {
       "category": "public.app-category.graphics-design",
-      "target": [{
-           "target": "dmg",
-           "arch": ["arm64"]
-      }]
+      "target": [
+        {
+          "target": "dmg",
+          "arch": [
+            "arm64"
+          ]
+        }
+      ]
     },
     "dmg": {
       "contents": [
@@ -74,8 +78,8 @@
   "scripts": {
     "postinstall": "install-app-deps",
     "install-app-deps": "node ./node_modules/electron-builder/out/install-app-deps.js",
-    "start": "./node_modules/.bin/electron ./app",
-    "start:dev": "./node_modules/.bin/electron ./app --enable-dev --enable-transparent-visuals",
+    "start": "./node_modules/.bin/electron ./app --no-sandbox",
+    "start:dev": "./node_modules/.bin/electron ./app --no-sandbox --enable-dev",
     "start:mac": "./node_modules/.bin/electron ./app --enable-dev",
     "clean": "rimraf dist",
     "pack": "build",
@@ -87,6 +91,14 @@
   },
   "private": true,
   "dependencies": {
-    "@electron/remote": "^2.0.1"
+    "@electron/remote": "^2.1.3",
+    "@mdi/font": "^7.4.47",
+    "jimp": "^1.6.0",
+    "less": "^4.6.3",
+    "lodash": "^4.17.23",
+    "moment": "^2.30.1",
+    "perfect-freehand": "^1.2.3",
+    "q": "^2.0.3",
+    "tmp": "^0.2.5"
   }
 }
