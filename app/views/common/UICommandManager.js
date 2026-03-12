@@ -247,10 +247,6 @@ UICommandManager.shouldBeHandled = function (event) {
     );
 };
 UICommandManager.handleKeyEvent = function (event) {
-    if ((IS_MAC ? event.metaKey : event.ctrlKey) && event.altKey && event.shiftKey && event.keyCode == 80) {
-        Pencil.app.mainWindow.openDevTools();
-    }
-
     if (!UICommandManager.shouldBeHandled(event)) return;
 
     for (var i = 0; i < UICommandManager.commands.length; i ++) {

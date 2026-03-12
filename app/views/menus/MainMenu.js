@@ -233,7 +233,7 @@ MainMenu.prototype.setup = function () {
     developerToolSubItems.push(UICommandManager.register({
         key: "openDeveloperTools",
         label: "Open Developer Tools",
-        shortcut: "Ctrl+Alt+Shift+P",
+        shortcut: "F12",
         run: function () {
             Pencil.app.mainWindow.openDevTools();
         }

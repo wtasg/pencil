@@ -68,66 +68,7 @@
     "electron-builder": "23.6.0",
     "electron-updater": "^5.3.0"
   },
-  "build": {
-    "appId": "vn.evolus.pencil",
-    "productName": "Pencil",
-    "copyright": "Copyright © 2008-2016 Evolus. All rights reserved.",
-    "mac": {
-      "category": "public.app-category.graphics-design",
-	  "icon": "build/icon.icns",
-      "target": [{
-           "target": "dmg",
-           "arch": ["universal"]
-      }]
-    },
-    "dmg": {
-      "contents": [
-        {
-          "x": 356,
-          "y": 140,
-          "type": "link",
-          "path": "/Applications"
-        },
-        {
-          "x": 130,
-          "y": 145,
-          "type": "file"
-        }
-      ]
-    },
-    "linux": {
-      "description": "An open-source GUI prototyping tool that is available for ALL platforms.",
-      "synopsis": "An open-source GUI prototyping tool that is available for ALL platforms.",
-      "maintainer": "Nguyen Tien Dzung <ngtdungnt@gmail.com>",
-      "vendor": "Evolus",
-      "target": [
-        "deb",
-        "rpm",
-        "tar.gz",
-        "freebsd"
-      ],
-      "category": "Graphics",
-      "packageCategory": "graphics"
-    },
-    "win": {
-      "target": "nsis"
-    },
-    "nsis": {
-      "oneClick": false,
-      "perMachine": true,
-      "allowToChangeInstallationDirectory": true
-    },
-    "electronDownload": {
-    },
-    "fileAssociations": {
-      "ext": [
-        "ep",
-        "epz",
-        "epgz"
-      ],
-      "name": "Pencil Document"
-    }
-  },
+  
   "scripts": {
     "postinstall": "install-app-deps",
     "install-app-deps": "node ./node_modules/electron-builder/out/install-app-deps.js",
