@@ -88,7 +88,7 @@
     "postinstall": "electron-builder install-app-deps",
     "start": "electron ./app --no-sandbox",
     "start:dev": "electron ./app --no-sandbox --enable-dev",
-    "test": "jest",
+    "test": "jest --config jest.config.js",
     "test:e2e": "playwright test",
     "test:e2e:headed": "playwright test --headed",
     "clean": "rimraf dist",
