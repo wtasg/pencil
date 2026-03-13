@@ -1,0 +1,96 @@
+<vbox>
+    <style>
+        .ReactPaneToolbar {
+            padding: 0.75em 0.9em 0.4em;
+            align-items: center;
+            gap: 0.4em;
+            border-bottom: solid 1px rgba(0, 0, 0, 0.08);
+            background: rgba(255, 255, 255, 0.8);
+        }
+
+        .ReactPaneToolbar .ReactPaneSearch {
+            min-width: 0px;
+        }
+
+        .ReactPaneToolbar .ReactPaneRefresh {
+            white-space: nowrap;
+        }
+
+        .ReactShapeListContainer {
+            overflow-y: auto;
+            overflow-x: hidden;
+            padding: 1em;
+        }
+
+        .ShapeList {
+            list-style: none;
+            padding: 0em 0.5em;
+            margin: 0px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-content: flex-start;
+            overflow: auto;
+        }
+
+        .ShapeList li {
+            padding: 0px;
+            display: block;
+            margin: 0.2em 0em;
+        }
+
+        .ShapeList li .Shape {
+            width: 6.6em;
+            padding: 0.5em;
+            box-sizing: content-box;
+            color: #333;
+            cursor: default;
+        }
+
+        .ShapeList li .Shape:hover {
+            background: rgba(255, 255, 255, 0.5);
+            border-radius: 0.2em;
+        }
+
+        .ShapeList li .Shape .Icon {
+            width: 6.6em;
+            height: 6.6em;
+            text-align: center;
+            background: #fff;
+            border-radius: 0.35em;
+            box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.08);
+            overflow: hidden;
+        }
+
+        .ShapeList li .Shape img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .ShapeList li .Shape span {
+            display: block;
+            text-overflow: ellipsis;
+            overflow: hidden;
+            height: 1.2em;
+            line-height: 1.2em;
+            font-size: 0.9em;
+            text-align: center;
+            opacity: 0.7;
+            text-shadow: 1px 1px 0px rgba(255, 255, 255, 0.4);
+            margin-top: 0.35em;
+        }
+    </style>
+
+    <hbox anon-id="toolbar" class="ReactPaneToolbar">
+        <input anon-id="searchInput" type="text" flex="1" class="form-control ReactPaneSearch"
+            placeholder="Filter React components" />
+        <button anon-id="refreshButton" class="ReactPaneRefresh"
+            title="Refresh from @wtasnorg/ui (Ctrl+Shift+R)"><i>refresh</i></button>
+    </hbox>
+
+    <vbox flex="1" anon-id="shapeListContainer" class="ReactShapeListContainer">
+        <ul anon-id="shapeList" class="ShapeList" flex="1">
+        </ul>
+    </vbox>
+</vbox>

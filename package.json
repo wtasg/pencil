@@ -85,6 +85,12 @@
     }
   },
   "scripts": {
+    "react-ui:manifest": "npm --prefix app run react-ui:manifest",
+    "prestart": "npm run react-ui:manifest",
+    "predist": "npm run react-ui:manifest",
+    "predist:linux": "npm run react-ui:manifest",
+    "predist:win": "npm run react-ui:manifest",
+    "predist:mac": "npm run react-ui:manifest",
     "postinstall": "electron-builder install-app-deps",
     "start": "electron ./app --no-sandbox",
     "start:dev": "electron ./app --no-sandbox --enable-dev",
