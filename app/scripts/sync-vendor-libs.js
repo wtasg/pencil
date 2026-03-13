@@ -41,14 +41,15 @@ function manifestEntry(absPath, packageName) {
 
 const appRoot = path.resolve(__dirname, "..");
 const nodeModules = path.join(appRoot, "node_modules");
+const compatRoot = path.join(appRoot, "vendor", "codemirror-compat");
 
 const sources = {
     bootstrapCss: path.join(nodeModules, "bootstrap", "dist", "css", "bootstrap.min.css"),
-    codemirrorCss: path.join(nodeModules, "codemirror", "lib", "codemirror.css"),
-    codemirrorJs: path.join(nodeModules, "codemirror", "lib", "codemirror.js"),
-    codemirrorHtmlMixed: path.join(nodeModules, "codemirror", "mode", "htmlmixed", "htmlmixed.js"),
-    codemirrorJavascript: path.join(nodeModules, "codemirror", "mode", "javascript", "javascript.js"),
-    codemirrorXml: path.join(nodeModules, "codemirror", "mode", "xml", "xml.js"),
+    codemirrorCss: path.join(compatRoot, "codemirror.css"),
+    codemirrorJs: path.join(compatRoot, "codemirror.js"),
+    codemirrorHtmlMixed: path.join(compatRoot, "htmlmixed.js"),
+    codemirrorJavascript: path.join(compatRoot, "javascript.js"),
+    codemirrorXml: path.join(compatRoot, "xml.js"),
     faCss: path.join(nodeModules, "font-awesome", "css", "font-awesome.min.css"),
     faLess: path.join(nodeModules, "font-awesome", "less"),
     faFonts: path.join(nodeModules, "font-awesome", "fonts"),
@@ -70,14 +71,18 @@ const targets = {
     codemirrorHtmlMixed: path.join(appRoot, "lib", "codemirror", "htmlmixed.js"),
     codemirrorJavascript: path.join(appRoot, "lib", "codemirror", "javascript.js"),
     codemirrorXml: path.join(appRoot, "lib", "codemirror", "xml.js"),
-    faCss: path.join(appRoot, "lib", "font-awesome-4.4.0", "css", "font-awesome.min.css"),
-    faLess: path.join(appRoot, "lib", "font-awesome-4.4.0", "less"),
-    faFonts: path.join(appRoot, "lib", "font-awesome-4.4.0", "fonts"),
+    faRoot: path.join(appRoot, "lib", "font-awesome"),
+    legacyFaRoot: path.join(appRoot, "lib", "font-awesome-4.4.0"),
+    faCss: path.join(appRoot, "lib", "font-awesome", "css", "font-awesome.min.css"),
+    faLess: path.join(appRoot, "lib", "font-awesome", "less"),
+    faFonts: path.join(appRoot, "lib", "font-awesome", "fonts"),
     mdiCss: path.join(appRoot, "lib", "mdi", "css", "materialdesignicons.min.css"),
     mdiFonts: path.join(appRoot, "lib", "mdi", "fonts")
 };
 
 fs.rmSync(targets.bootstrapRoot, { recursive: true, force: true });
+fs.rmSync(targets.faRoot, { recursive: true, force: true });
+fs.rmSync(targets.legacyFaRoot, { recursive: true, force: true });
 copyFile(sources.bootstrapCss, targets.bootstrapCss);
 copyFile(sources.codemirrorCss, targets.codemirrorCss);
 copyFile(sources.codemirrorJs, targets.codemirrorJs);

@@ -68,7 +68,7 @@ describe('app/lib runtime contract', () => {
         expect(manifest.packages['@mdi/font'].version).toBeTruthy();
         expect(Array.isArray(manifest.files)).toBe(true);
         expect(manifest.files.some(file => file.path === 'lib/bootstrap/bootstrap.min.css')).toBe(true);
-        expect(manifest.files.some(file => file.path === 'lib/font-awesome-4.4.0/css/font-awesome.min.css')).toBe(true);
+        expect(manifest.files.some(file => file.path === 'lib/font-awesome/css/font-awesome.min.css')).toBe(true);
         expect(manifest.files.some(file => file.path === 'lib/mdi/css/materialdesignicons.min.css')).toBe(true);
         expect(manifest.files.some(file => file.path === 'lib/codemirror/codemirror.js')).toBe(true);
     });
@@ -77,7 +77,7 @@ describe('app/lib runtime contract', () => {
         const pencilCss = read(path.join(REPO_ROOT, 'app', 'css', 'pencil.css'));
 
         expect(pencilCss).toContain('@import "../lib/bootstrap/bootstrap.min.css";');
-        expect(pencilCss).toContain('@import "../lib/font-awesome-4.4.0/css/font-awesome.min.css";');
+        expect(pencilCss).toContain('@import "../lib/font-awesome/css/font-awesome.min.css";');
         expect(pencilCss).not.toContain('../lib/bootstrap/bootstrap.less');
     });
 

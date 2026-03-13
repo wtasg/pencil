@@ -4,7 +4,7 @@
       "version": "5.3.8"
     },
     "codemirror": {
-      "version": "5.65.18"
+      "version": "6.0.2"
     },
     "font-awesome": {
       "version": "4.7.0"
@@ -22,30 +22,30 @@
     {
       "path": "lib/codemirror/codemirror.css",
       "package": "codemirror",
-      "sha256": "eb494ea972d2661ef86f7f6ac656dd6786d721e49c9c1b46e1eb967e4b6f9bf3"
+      "sha256": "b0ffa9d2630c4dcd03be8a20212b5b22b9fdf5b7008150695339fcd6583b8071"
     },
     {
       "path": "lib/codemirror/codemirror.js",
       "package": "codemirror",
-      "sha256": "edc03cf5294adb8f68eed55f8845888aa0c403a6445b15f80a8666a1f540d78b"
+      "sha256": "c1d56bd6e7b4fdef23c7073539070d005deebe32973213c28078ee1f77d2b75b"
     },
     {
       "path": "lib/codemirror/htmlmixed.js",
       "package": "codemirror",
-      "sha256": "fe5912e1d10f8fecb98bd31e2f957c0bbc9abf6b505d11b6dbcd27542d0fdcad"
+      "sha256": "c6347f997d036aa04128cc5b7c0e7c582b538fa7cab558c4aa49dae83456646c"
     },
     {
       "path": "lib/codemirror/javascript.js",
       "package": "codemirror",
-      "sha256": "1311c73c66308ba6f78512b4c2e770a6900c80c3629683763329668ee6111163"
+      "sha256": "c6347f997d036aa04128cc5b7c0e7c582b538fa7cab558c4aa49dae83456646c"
     },
     {
       "path": "lib/codemirror/xml.js",
       "package": "codemirror",
-      "sha256": "dc7e44d410399326f802e2924573cbf6f942a79f647fd0b97f0b607973bc9a09"
+      "sha256": "c6347f997d036aa04128cc5b7c0e7c582b538fa7cab558c4aa49dae83456646c"
     },
     {
-      "path": "lib/font-awesome-4.4.0/css/font-awesome.min.css",
+      "path": "lib/font-awesome/css/font-awesome.min.css",
       "package": "font-awesome",
       "sha256": "799aeb25cc0373fdee0e1b1db7ad6c2f6a0e058dfadaa3379689f583213190bd"
     },
