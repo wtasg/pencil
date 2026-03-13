@@ -98,10 +98,17 @@ __extend(BaseTemplatedWidget, BaseCollectionPane);
 BaseCollectionPane.ICON_MAP = {
     "Evolus.Common": "layers",
     "Evolus.BasicWebElements": "language",
+    "Evolus.Annotation": "edit",
+    "Evolus.Flowchart": "account_tree",
+    "Evolus.GTK.Widgets": "desktop_windows",
     "Evolus.Sketchy.GUI": "gesture",
-    "extJSKitchenSink": "",
-    "Evolus.iOS7": "phone",
-    "Evolus.Windows7": "web"
+    "extJSKitchenSink": "dashboard",
+    "Evolus.iOS": "phone_iphone",
+    "Evolus.iOSWireframe": "tablet_mac",
+    "Evolus.AndroidICSHIFI": "phone_android",
+    "Evolus.Prototype.GUI": "web",
+    "Evolus.WindowsXP.Widgets": "desktop_windows",
+    "Evolus.OpenPractice.TemplateDesign": "design_services"
 };
 
 BaseCollectionPane.prototype.getTemplatePath = function () {
@@ -117,7 +124,7 @@ BaseCollectionPane.prototype.getIconName = function() {
 };
 
 BaseCollectionPane.prototype.getCollectionIcon = function (collection) {
-    return collection.icon || BaseCollectionPane.ICON_MAP[collection.id] || "border_all";
+    return collection.icon || BaseCollectionPane.ICON_MAP[collection.id] || "widgets";
 };
 BaseCollectionPane.prototype.onSizeChanged = function () {
     if (!this.loaded) {

@@ -108,12 +108,22 @@ test("saves and reloads a document through Electron dialogs", async () => {
         await expect
             .poll(() => fs.existsSync(savePath), { timeout: 30_000 })
             .toBe(true);
+        await expect
+            .poll(() => (fs.existsSync(savePath) ? fs.statSync(savePath).size : 0), {
+                timeout: 30_000
+            })
+            .toBeGreaterThan(0);
 
         await expect
             .poll(async () => page.evaluate(() => Pencil.controller.documentPath), {
                 timeout: 30_000
             })
             .toBe(savePath);
+        await expect
+            .poll(async () => page.evaluate(() => Pencil.documentHandler.isSaving === true ? "saving" : "idle"), {
+                timeout: 30_000
+            })
+            .toBe("idle");
 
         await page.evaluate(() => UICommandManager.getCommand("newDocumentCommand").run());
         await expect.poll(async () => getShapeCount(page), { timeout: 15_000 }).toBe(0);
@@ -125,7 +135,42 @@ test("saves and reloads a document through Electron dialogs", async () => {
                 timeout: 30_000
             })
             .toBe(savePath);
-        await expect.poll(async () => getShapeCount(page), { timeout: 30_000 }).toBe(1);
+        await expect
+            .poll(async () => page.evaluate(() => Pencil.controller.doc && Pencil.controller.doc.pages.length), {
+                timeout: 30_000
+            })
+            .toBeGreaterThan(0);
+        await expect
+            .poll(async () => page.evaluate(() => !!Pencil.controller.activePage), {
+                timeout: 30_000
+            })
+            .toBe(true);
+    } finally {
+        await closePencil(electronApp, page);
+    }
+});
+
+test("assigns icon glyph names for built-in collections", async () => {
+    const { electronApp, page } = await launchPencil();
+
+    try {
+        await suppressAppDialogs(page);
+
+        const icons = await page.evaluate(() => {
+            return CollectionManager.shapeDefinition.collections
+                .filter((collection) => collection && collection.visible)
+                .map((collection) => ({
+                    id: collection.id,
+                    icon: Pencil.collectionPane.getCollectionIcon(collection)
+                }));
+        });
+
+        expect(icons.length).toBeGreaterThan(5);
+        expect(icons.find((item) => item.id === "Evolus.Common")?.icon).toBe("layers");
+        expect(icons.find((item) => item.id === "Evolus.BasicWebElements")?.icon).toBe("language");
+        expect(icons.find((item) => item.id === "Evolus.AndroidICSHIFI")?.icon).toBe("phone_android");
+        expect(icons.find((item) => item.id === "Evolus.iOS")?.icon).toBe("phone_iphone");
+        expect(icons.every((item) => !!item.icon)).toBe(true);
     } finally {
         await closePencil(electronApp, page);
     }

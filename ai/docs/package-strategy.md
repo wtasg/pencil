@@ -103,19 +103,19 @@ Result: no further app/lib package version upgrades are currently available.
 
 - `cd app && npm outdated --json || true`
 
-2. If any app/lib-vendored package is outdated, upgrade in app:
+1. If any app/lib-vendored package is outdated, upgrade in app:
 
 - `cd app && npm install <package>@<version> --save-exact`
 
-3. Re-sync vendored runtime assets:
+1. Re-sync vendored runtime assets:
 
 - `cd app && npm run libs:sync`
 
-4. Verify contract tests:
+1. Verify contract tests:
 
 - `cd .. && npx jest tests/lib-usage-contract.test.js --runInBand --watchman=false`
 
-5. Verify Electron E2E tests:
+1. Verify Electron E2E tests:
 
 - `npm run test:e2e`
 
