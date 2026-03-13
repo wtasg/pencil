@@ -148,20 +148,19 @@ ImageData.refStringToUrl = function (refString) {
     return Pencil.controller.refIdToUrl(id);
 };
 
-ImageData.prompt = function (callback, ext) {
-    dialog.showOpenDialog(remote.getCurrentWindow(), {
+ImageData.prompt = async function(callback, ext) {
+    const res = await dialog.showOpenDialog(remote.getCurrentWindow(), {
         title: "Select Image",
         defaultPath: Config.get("document.open.recentlyImagePath", null) || os.homedir(),
         filters: [
             { name: "Image files", extensions: ext || ["png", "jpg", "jpeg", "gif", "bmp", "svg"] }
         ]
-    }).then(function (res) {
-        if (!res || !res.filePaths || res.filePaths.length <= 0) return;
-        var p = res.filePaths[0];
-        Config.set("document.open.recentlyImagePath", path.dirname(p));
-
-        ImageData.fromExternalToImageData(p, callback);
     });
+    if (!res || !res.filePaths || res.filePaths.length <= 0) return;
+    var p = res.filePaths[0];
+    Config.set("document.open.recentlyImagePath", path.dirname(p));
+
+    ImageData.fromExternalToImageData(p, callback);
 };
 
 ImageData.fromExternalToImageData = function (filePath, callback) {
@@ -377,10 +376,11 @@ ImageData.fromScreenshot = function (callback, providedOptions) {
 
         var delay = (options.delay ? parseInt(options.delay, 10) * 1000 : 0) + 100;
 
-        window.setTimeout(function () {
-            provider.capture(options).then(function () {
+        window.setTimeout(async function() {
+            try {
+                await provider.capture(options);
                 if (options.hidePencil) win.show();
-                ImageData.fromExternalToImageData(localPath, function (imageData) {
+                ImageData.fromExternalToImageData(localPath, function(imageData) {
                     //As the image is getting directly from device screenshot, the number of pixel was already multiplied by the scale
                     var ratio = remote.screen.getPrimaryDisplay().scaleFactor;
                     if (ratio > 1) {
@@ -392,10 +392,10 @@ ImageData.fromScreenshot = function (callback, providedOptions) {
                     fs.unlinkSync(localPath);
                     callback(imageData, options);
                 });
-            }).catch(function (error) {
+            } catch (error) {
                 if (options.hidePencil) win.show();
                 callback(null, options, error);
-            });
+            }
         }, delay);
     };
 

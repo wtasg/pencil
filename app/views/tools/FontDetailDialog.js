@@ -145,26 +145,25 @@ FontDetailDialog.prototype.setPathToInput = function (input, filePath) {
         input.removeAttribute("haspath");
     }
 };
-FontDetailDialog.prototype.handleClick = function (event) {
+FontDetailDialog.prototype.handleClick = async function(event) {
     var button = event.target;
     if (!button.className || button.className.indexOf("BrowseButton") < 0) return;
 
     var input = button.previousSibling;
-    dialog.showOpenDialog(remote.getCurrentWindow(), {
+    const res = await dialog.showOpenDialog(remote.getCurrentWindow(), {
         title: "Select Font File",
         defaultPath: input.value || Config.get("document.open.recentlyDirPath", null) || os.homedir(),
         filters: [
             { name: "Fonts", extensions: ["ttf", "otf", "woff"] }
         ]
-    }).then(function (res) {
-        console.log(res);
-        if (!res || !res.filePaths || res.filePaths.length <= 0) {
-            this.setPathToInput(input, "");
-        } else {
-            Config.set("document.open.recentlyDirPath", path.dirname(res.filePaths[0]));
-            this.setPathToInput(input, res.filePaths[0]);
-        }
-    }.bind(this));
+    });
+    console.log(res);
+    if (!res || !res.filePaths || res.filePaths.length <= 0) {
+        this.setPathToInput(input, "");
+    } else {
+        Config.set("document.open.recentlyDirPath", path.dirname(res.filePaths[0]));
+        this.setPathToInput(input, res.filePaths[0]);
+    }
 };
 FontDetailDialog.prototype.handleMultipleFileSelection = function (filePaths) {
     for (var filePath of filePaths) {

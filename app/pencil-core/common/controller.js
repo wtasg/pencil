@@ -1136,7 +1136,7 @@ Controller.prototype.updatePageThumbnail = function (page, done) {
     });
 };
 
-Controller.prototype.rasterizeCurrentPage = function (targetPage) {
+Controller.prototype.rasterizeCurrentPage = async function(targetPage) {
     var page = targetPage ? targetPage : (this.activePage ? this.activePage : null);
     if (!page) {
         return;
@@ -1152,23 +1152,22 @@ Controller.prototype.rasterizeCurrentPage = function (targetPage) {
         }
     }
 
-    dialog.showSaveDialog({
+    const res = await dialog.showSaveDialog({
         title: "Export page as PNG",
         defaultPath: path.join(this.documentPath && path.dirname(this.documentPath) || os.homedir(), (page.name + ".png")),
         filters: [
             { name: "PNG Image (*.png)", extensions: ["png"] }
         ]
-    }).then(function (res) {
-        if (!res || !res.filePath) return;
-        var filePath = res.filePath;
-        this.applicationPane.rasterizer.rasterizePageToFile(page, filePath, function (p, error) {
-            if (!error) {
-                NotificationPopup.show("Page exported as '" + path.basename(filePath) + "'.", "View", function () {
-                    shell.openPath(filePath);
-                });
-            }
-        }, undefined, false, options);
-    }.bind(this));
+    });
+    if (!res || !res.filePath) return;
+    var filePath = res.filePath;
+    this.applicationPane.rasterizer.rasterizePageToFile(page, filePath, function(p, error) {
+        if (!error) {
+            NotificationPopup.show("Page exported as '" + path.basename(filePath) + "'.", "View", function() {
+                shell.openPath(filePath);
+            });
+        }
+    }, undefined, false, options);
 };
 
 Controller.prototype.copyPageBitmap = function (targetPage) {
@@ -1214,7 +1213,7 @@ Controller.prototype.copyPageBitmap = function (targetPage) {
     }, 100);
 };
 
-Controller.prototype.rasterizeSelection = function (options) {
+Controller.prototype.rasterizeSelection = async function(options) {
     var target = Pencil.activeCanvas.currentController;
     if (!target || !target.getGeometry) return;
 
@@ -1241,23 +1240,22 @@ Controller.prototype.rasterizeSelection = function (options) {
             }
         }, undefined, options);
     } else {
-        dialog.showSaveDialog({
+        const res = await dialog.showSaveDialog({
             title: "Export selection as PNG",
             defaultPath: path.join(this.documentPath && path.dirname(this.documentPath) || os.homedir(), ""),
             filters: [
                 { name: "PNG Image (*.png)", extensions: ["png"] }
             ]
-        }).then(function (res) {
-            if (!res || !res.filePath) return;
-            var filePath = res.filePath;
-            this.applicationPane.rasterizer.rasterizeSelectionToFile(target, filePath, function (p, error) {
-                if (!error) {
-                    NotificationPopup.show("Selection exported as '" + path.basename(filePath) + "'.", "View", function () {
-                        shell.openPath(filePath);
-                    });
-                }
-            }, undefined, options);
-        }.bind(this));
+        });
+        if (!res || !res.filePath) return;
+        var filePath = res.filePath;
+        this.applicationPane.rasterizer.rasterizeSelectionToFile(target, filePath, function(p, error) {
+            if (!error) {
+                NotificationPopup.show("Selection exported as '" + path.basename(filePath) + "'.", "View", function() {
+                    shell.openPath(filePath);
+                });
+            }
+        }, undefined, options);
     }
 
 };
@@ -1569,7 +1567,7 @@ Controller.prototype.prepareForEmbedding = function (node, onPreparingDoneCallba
     });
 };
 
-Controller.prototype.exportAsLayout = function () {
+Controller.prototype.exportAsLayout = async function() {
     var container = Pencil.activeCanvas.drawingLayer;
 
     var pw = parseFloat(this.activePage.width);
@@ -1684,18 +1682,17 @@ Controller.prototype.exportAsLayout = function () {
         defaultPath = path.join(devCollection.installDirPath, defaultPath);
     }
 
-    dialog.showSaveDialog(remote.getCurrentWindow(), {
+    const res = await dialog.showSaveDialog(remote.getCurrentWindow(), {
         title: "Export Layout",
         defaultPath: defaultPath,
         filters: [{name: 'XHTML Layout', extensions: ["xhtml"]}]
-    }).then(function (res) {
-        if (!res || !res.filePath) return;
-        var filePath = res.filePath;
-        outputPath = filePath;
-        outputImage = path.join(path.dirname(outputPath), IMAGE_FILE);
-        Pencil.rasterizer.rasterizePageToFile(thiz.activePage, outputImage, function (p, error) {
-            done();
-        });
+    });
+    if (!res || !res.filePath) return;
+    var filePath = res.filePath;
+    outputPath = filePath;
+    outputImage = path.join(path.dirname(outputPath), IMAGE_FILE);
+    Pencil.rasterizer.rasterizePageToFile(thiz.activePage, outputImage, function(p, error) {
+        done();
     });
 };
 

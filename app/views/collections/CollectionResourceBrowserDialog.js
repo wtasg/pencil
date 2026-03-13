@@ -141,7 +141,7 @@ CollectionResourceBrowserDialog.prototype.changeCollection = function () {
     this.focusResult = true;
     this.search();
 };
-CollectionResourceBrowserDialog.prototype.search = function () {
+CollectionResourceBrowserDialog.prototype.search = async function() {
     this.searchTimeout = null;
     var keyword = this.filterInput.value.trim();
     var items = [];
@@ -160,43 +160,42 @@ CollectionResourceBrowserDialog.prototype.search = function () {
         }
     }
 
-    this.getMatchingResources(dirPath, this.prefix || "", keyword)
-        .then(function (matched) {
-            Dom.empty(this.resultContainer);
-            var count = 0;
-            var previousview = null;
-            for (var item of matched) {
-                var view = Dom.newDOMElement({
-                    _name: "div",
-                    _uri: PencilNamespaces.html,
-                    title: path.basename(item.name),
-                    tabindex: "" + count,
-                    "class": "Item",
-                    _children: [
-                        //imageViewSpec
-                    ]
-                });
-                view._data = item;
-                view._index = count;
+    try {
+        const matched = await this.getMatchingResources(dirPath, this.prefix || "", keyword);
+        Dom.empty(this.resultContainer);
+        var count = 0;
+        var previousview = null;
+        for (var item of matched) {
+            var view = Dom.newDOMElement({
+                _name: "div",
+                _uri: PencilNamespaces.html,
+                title: path.basename(item.name),
+                tabindex: "" + count,
+                "class": "Item",
+                _children: [
+                    //imageViewSpec
+                ]
+            });
+            view._data = item;
+            view._index = count;
 
-                if (previousview) previousview._next = view;
-                view._prev = previousview;
-                previousview = view;
+            if (previousview) previousview._next = view;
+            view._prev = previousview;
+            previousview = view;
 
-                this.resultContainer.appendChild(view);
-                count ++;
-            }
+            this.resultContainer.appendChild(view);
+            count++;
+        }
 
-            if (this.focusResult) {
-                if (this.resultContainer.firstChild && this.resultContainer.firstChild.focus) this.resultContainer.firstChild.focus();
-                this.focusResult = false;
-            }
+        if (this.focusResult) {
+            if (this.resultContainer.firstChild && this.resultContainer.firstChild.focus) this.resultContainer.firstChild.focus();
+            this.focusResult = false;
+        }
 
-            this.ensureVisibleItemsContent();
-        }.bind(this))
-        .catch (function (err) {
-            console.error(err);
-        });
+        this.ensureVisibleItemsContent();
+    } catch (err) {
+        console.error(err);
+    }
 };
 CollectionResourceBrowserDialog.prototype.handleListFocus = function (e) {
     var view = Dom.findUpwardForNodeWithData(e.target, "_data");
@@ -287,54 +286,41 @@ CollectionResourceBrowserDialog.prototype.handleListKeyDown = function (e) {
         this.returnData(view._data);
     }
 };
-CollectionResourceBrowserDialog.prototype.getMatchingResources = function (dirPath, relativePath, keyword) {
-    return new Promise(function (resolve, reject) {
-        var items = [];
-        var pending = [{
-            abs: dirPath,
-            rel: relativePath
-        }];
-        var next = function() {
-            if (pending.length == 0) {
-                resolve(items);
-                return;
-            }
-            var current = pending.shift();
-            fs.readdir(current.abs, "utf8", function (err, files) {
-                if (err) {
-                    reject(err);
-                    return;
-                }
+CollectionResourceBrowserDialog.prototype.getMatchingResources = async function(dirPath, relativePath, keyword) {
+    const items = [];
+    const pending = [{
+        abs: dirPath,
+        rel: relativePath
+    }];
 
-                for (var name of files) {
-                    var p = path.join(current.abs, name);
-                    var stat = fs.statSync(p);
-                    if (stat.isDirectory()) {
-                        pending.push({
-                            abs: p,
-                            rel: (current.rel ? (current.rel + "/") : "") + name
+    while (pending.length > 0) {
+        const current = pending.shift();
+        const files = await fs.promises.readdir(current.abs, "utf8");
+
+        for (var name of files) {
+            var p = path.join(current.abs, name);
+            var stat = fs.statSync(p);
+            if (stat.isDirectory()) {
+                pending.push({
+                    abs: p,
+                    rel: (current.rel ? (current.rel + "/") : "") + name
+                });
+            } else {
+                if (!this.type || name.endsWith(this.type)) {
+                    if (name.toLowerCase().indexOf(keyword) >= 0) {
+                        items.push({
+                            path: p,
+                            container: current.rel,
+                            relativePath: (current.rel ? (current.rel + "/") : "") + name,
+                            name: name
                         });
-                    } else {
-                        if (!this.type || name.endsWith(this.type)) {
-                            if (name.toLowerCase().indexOf(keyword) >= 0) {
-                                items.push({
-                                    path: p,
-                                    container: current.rel,
-                                    relativePath: (current.rel ? (current.rel + "/") : "") + name,
-                                    name: name
-                                });
-                            }
-                        }
                     }
                 }
+            }
+        }
+    }
 
-                next();
-
-            });
-        };
-
-        next();
-    });
+    return items;
 };
 
 CollectionResourceBrowserDialog.handleSVGObjectLoaded = function (e) {

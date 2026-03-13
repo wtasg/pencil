@@ -138,7 +138,7 @@ module.exports = function () {
 
                 var capturePendingTaskId = null;
 
-                currentRenderHandler = function (renderedEvent, renderedData) {
+                currentRenderHandler = async function(renderedEvent, renderedData) {
                     if (renderedData.uuid != uuid) {
                         return;
                     }
@@ -149,16 +149,17 @@ module.exports = function () {
                         event.sender.send(data.id, {url: "", objectsWithLinking: renderedData.objectsWithLinking});
                         __callback();
                     } else {
-                        rendererWindow.webContents.capturePage().then(function (nativeImage) {
+                        try {
+                            const nativeImage = await rendererWindow.webContents.capturePage();
                             var dataURL = nativeImage.toDataURL();
 
                             cleanupCallback();
                             currentRenderHandler = null;
                             event.sender.send(data.id, {url: dataURL, objectsWithLinking: renderedData.objectsWithLinking});
                             __callback();
-                        }).catch(function (e) {
+                        } catch (e) {
                             console.error(e);
-                        });
+                        }
                     }
                 };
 

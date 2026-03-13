@@ -131,21 +131,26 @@ widget.Util = function() {
                 css = "@import \"variables.less\";\n" + css;
                 var baseDirectory = path.join(__dirname, "css");
 
-                less.render(css, {
-                    paths: ['.', './css', baseDirectory]
-                }).then(function (output) {
-                    var head = document.head || document.getElementsByTagName("head")[0];
-                    var style = document.createElement("style");
-                    style.type = "text/css";
-                    style.setAttribute("widget", templateName);
+                (async function() {
+                    try {
+                        const output = await less.render(css, {
+                            paths: ['.', './css', baseDirectory]
+                        });
+                        var head = document.head || document.getElementsByTagName("head")[0];
+                        var style = document.createElement("style");
+                        style.type = "text/css";
+                        style.setAttribute("widget", templateName);
 
-                    if (style.styleSheet) {
-                        style.styleSheet.cssText = "";
+                        if (style.styleSheet) {
+                            style.styleSheet.cssText = "";
+                        }
+
+                        head.appendChild(style);
+                        style.appendChild(document.createTextNode(output.css));
+                    } catch (e) {
+                        console.log("Render error for " + templateName, e);
                     }
-
-                    head.appendChild(style);
-                    style.appendChild(document.createTextNode(output.css));
-                });
+                })();
 
                 processedCSS[templateName] = true;
                 return "";
@@ -582,34 +587,36 @@ function run(task, message, indicator) {
     });
 }
 
-widget.reloadDesktopFont = function() {
-        return new Promise(function(resolve) {
-            require("./desktop").getDesktopFontConfig(function (config) {
-                    if (config.font) document.body.style.font = config.font;
-                    if (config.family) document.body.style.fontFamily = config.family;
-                    if (config.style) document.body.style.fontStyle = config.style;
-                    if (config.weight) document.body.style.fontWeight = config.weight;
-                    if (config.size) {
-                        var scale = Config.get("view.uiTextScale", 100) / 100;
-                        var size = config.size;
-                        if (config.size.match(/^([0-9\.]+)([pxt]+)$/)) {
-                            size = (parseFloat(RegExp.$1) * scale) + RegExp.$2;
-                        }
-                        document.body.style.fontSize = size;
-                    }
-
-                    var family = Config.get(Config.UI_CUSTOM_FONT_FAMILY);
-                    if (family) document.body.style.fontFamily = family;
-
-                    var size = Config.get(Config.UI_CUSTOM_FONT_SIZE);
-                    if (size) document.body.style.fontSize = size;
-
-                    resolve(config);
-            });
+widget.reloadDesktopFont = async function() {
+    const config = await new Promise(function(resolve) {
+        require("./desktop").getDesktopFontConfig(function(config) {
+            resolve(config);
         });
+    });
+
+    if (config.font) document.body.style.font = config.font;
+    if (config.family) document.body.style.fontFamily = config.family;
+    if (config.style) document.body.style.fontStyle = config.style;
+    if (config.weight) document.body.style.fontWeight = config.weight;
+    if (config.size) {
+        var scale = Config.get("view.uiTextScale", 100) / 100;
+        var size = config.size;
+        if (config.size.match(/^([0-9\.]+)([pxt]+)$/)) {
+            size = (parseFloat(RegExp.$1) * scale) + RegExp.$2;
+        }
+        document.body.style.fontSize = size;
+    }
+
+    var family = Config.get(Config.UI_CUSTOM_FONT_FAMILY);
+    if (family) document.body.style.fontFamily = family;
+
+    var size = Config.get(Config.UI_CUSTOM_FONT_SIZE);
+    if (size) document.body.style.fontSize = size;
+
+    return config;
 };
 
-document.addEventListener("DOMContentLoaded", function () {
+document.addEventListener("DOMContentLoaded", async function() {
     //load all registered widget class templates
     var index = -1;
 
@@ -659,10 +666,9 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     debug("BOOT: Loading desktop font configuration.");
-    widget.reloadDesktopFont().then(function () {
-        debug("BOOT: Loading view definition files");
-        loadNext();
-    });
+    await widget.reloadDesktopFont();
+    debug("BOOT: Loading view definition files");
+    loadNext();
 
 }, false);
 

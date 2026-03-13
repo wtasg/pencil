@@ -7,21 +7,22 @@ function EpzHandler (controller) {
 __extend(FileHandler, EpzHandler);
 
 EpzHandler.EXT = ".epz";
-EpzHandler.prototype.loadDocument = function(filePath) {
-    var thiz = this;
+EpzHandler.prototype.loadDocument = async function(filePath) {
+    const admZip = require('adm-zip');
+    const zip = new admZip(filePath);
 
-    return new Promise(function (resolve, reject) {
-        var admZip = require('adm-zip');
-
-        var zip = new admZip(filePath);
-        zip.extractAllToAsync(Pencil.documentHandler.tempDir.name, true, function (err) {
+    await new Promise((resolve, reject) => {
+        zip.extractAllToAsync(Pencil.documentHandler.tempDir.name, true, function(err) {
             if (err) {
                 reject(new Error("File could not be loaded: " + err));
             } else {
-                thiz.parseDocument(filePath, resolve);
+                resolve();
             }
         });
+    });
 
+    await new Promise((resolve) => {
+        this.parseDocument(filePath, resolve);
     });
 };
 

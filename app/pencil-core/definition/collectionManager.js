@@ -305,19 +305,17 @@ CollectionManager.reloadCollectionPane = function () {
     Pencil.collectionPane.loaded = false;
     Pencil.collectionPane.reload();
 };
-CollectionManager.installNewCollection = function (callback) {
-    var files = dialog.showOpenDialog({
+CollectionManager.installNewCollection = async function(callback) {
+    const res = await dialog.showOpenDialog({
         title: "Install from",
         defaultPath: Config.get("collection.install.recentlyDirPath", null) || os.homedir(),
         filters: [
             { name: "Stencil files", extensions: ["zip", "epc"] }
         ]
-
-    }).then(function (res) {
-        if (!res || !res.filePaths || res.filePaths.length <= 0) return;
-        Config.set("collection.install.recentlyDirPath", path.dirname(res.filePaths[0]));
-        CollectionManager.installCollectionFromFilePath(res.filePaths[0], callback);
     });
+    if (!res || !res.filePaths || res.filePaths.length <= 0) return;
+    Config.set("collection.install.recentlyDirPath", path.dirname(res.filePaths[0]));
+    CollectionManager.installCollectionFromFilePath(res.filePaths[0], callback);
 };
 
 CollectionManager.findDefinitionFile = function(dir) {
@@ -465,30 +463,25 @@ CollectionManager.installCollection = function(targetDir, callback) {
         }
     })();
 };
-CollectionManager.installCollectionFromFile = function (file, callback) {
-
+CollectionManager.installCollectionFromFile = async function(file, callback) {
     console.log("installCollectionFromFile", file);
     ApplicationPane._instance.busy();
 
-    CollectionManager.extractCollection(file)
-        .then((targetDir) => {
-            return CollectionManager.installCollection(targetDir);
-        })
-        .then((collection) => {
-            if (callback) {
-                callback(null, collection);
-            }
-        })
-        .catch((err) => {
-            Dialog.error("Error installing collection. " + err);
-            if (callback) {
-                callback(err, null);
-            }
-        })
-        .finally(() => {
-            CollectionManager.saveCollectionOrder();
-            ApplicationPane._instance.unbusy();
-        });
+    try {
+        const targetDir = await CollectionManager.extractCollection(file);
+        const collection = await CollectionManager.installCollection(targetDir);
+        if (callback) {
+            callback(null, collection);
+        }
+    } catch (err) {
+        Dialog.error("Error installing collection. " + err);
+        if (callback) {
+            callback(err, null);
+        }
+    } finally {
+        CollectionManager.saveCollectionOrder();
+        ApplicationPane._instance.unbusy();
+    }
 };
 
 CollectionManager.installCollectionFromFilePath = function (filePath, callback) {

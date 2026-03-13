@@ -71,14 +71,13 @@ EpHandler.prototype.parseOldFormatDocument = function (filePath, callback) {
         callback(new Error("Invalid file format."));
     }
 };
-EpHandler.prototype.loadDocument = function(filePath, callback) {
-    var thiz = this;
-    return new Promise(function (resolve, reject) {
-        if (!fs.existsSync(filePath)) {
-            throw new Error("File not found.");
-        }
+EpHandler.prototype.loadDocument = async function(filePath, callback) {
+    if (!fs.existsSync(filePath)) {
+        throw new Error("File not found.");
+    }
 
-        thiz.parseOldFormatDocument(filePath, function (err) {
+    await new Promise((resolve, reject) => {
+        this.parseOldFormatDocument(filePath, function(err) {
             if (err) {
                 reject(new Error("Unable to parse file: " + err));
             } else {

@@ -222,6 +222,7 @@ ExportDialog.prototype.getDialogActions = function () {
                         dialogOptions.defaultPath = this.lastParams.targetPath;
                     }
 
+                    var builder = this;
                     if (isFile) {
                         var filters = [];
                         var firstExt = null;
@@ -243,14 +244,13 @@ ExportDialog.prototype.getDialogActions = function () {
                         }
 
                         dialogOptions.filters = filters;
-                        dialog.showSaveDialog(dialogOptions).then(function (res) {
+                        (async function() {
+                            const res = await dialog.showSaveDialog(dialogOptions);
                             if (!res || !res.filePath) return;
                             result.targetPath = res.filePath;
                             console.log("Selected", res.filePath);
-
-                            this.close(result);
-
-                        }.bind(this));
+                            builder.close(result);
+                        })();
                     } else {
                         dialogOptions.properties = ["openDirectory"];
 
@@ -262,13 +262,12 @@ ExportDialog.prototype.getDialogActions = function () {
                             }
                         }
 
-                        dialog.showOpenDialog(dialogOptions).then(function (res) {
+                        (async function() {
+                            const res = await dialog.showOpenDialog(dialogOptions);
                             if (!res || !res.filePaths || res.filePaths.length <= 0) return;
                             result.targetPath = res.filePaths[0];
-
-                            this.close(result);
-
-                        }.bind(this));
+                            builder.close(result);
+                        })();
                     }
 
                 } else {

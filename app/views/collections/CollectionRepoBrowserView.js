@@ -95,23 +95,20 @@ CollectionRepoBrowserView.prototype.handleItemClick = function (control) {
     }
 };
 
-CollectionRepoBrowserView.prototype.loadCollectionList = function () {
-    var thiz = this;
-    CollectionRepository.loadCollections(this.repo.url)
-        .then((repo) => {
-            thiz.collectionRepeater.node().style.visibility = "hidden";
+CollectionRepoBrowserView.prototype.loadCollectionList = async function() {
+    try {
+        const repo = await CollectionRepository.loadCollections(this.repo.url);
+        this.collectionRepeater.node().style.visibility = "hidden";
 
-            window.setTimeout(function () {
-                thiz.collectionRepeater.setItems(repo.collections);
-                thiz.collectionRepeater.node().style.visibility = "inherit";
-            }, 10);
-        })
-        .catch((ex) => {
-            Dialog.error("Could not load collections list");
-            console.log(ex);
-        })
-        .finally(() => {
-            thiz.collectionContainer.setAttribute("loaded", true);
-        });
+        window.setTimeout(() => {
+            this.collectionRepeater.setItems(repo.collections);
+            this.collectionRepeater.node().style.visibility = "inherit";
+        }, 10);
+    } catch (ex) {
+        Dialog.error("Could not load collections list");
+        console.log(ex);
+    } finally {
+        this.collectionContainer.setAttribute("loaded", true);
+    }
 }
 

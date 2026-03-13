@@ -37,23 +37,21 @@ DocumentHandler.prototype.getAllSupportedExtensions = function(forSaving) {
     return extentions;
 }
 
-DocumentHandler.prototype.openDocument = function (callback) {
+DocumentHandler.prototype.openDocument = function(callback) {
     var thiz = this;
-    function handler() {
-        dialog.showOpenDialog(remote.getCurrentWindow(), {
+    async function handler() {
+        const res = await dialog.showOpenDialog(remote.getCurrentWindow(), {
             title: "Open",
             defaultPath: Config.get("document.open.recentlyDirPath", null) || os.homedir(),
             filters: [
                 { name: "Pencil Documents", extensions: thiz.getAllSupportedExtensions(false) }
             ]
-        }).then(function (res) {
-            if (!res || !res.filePaths || res.filePaths.length <= 0) return;
-            Config.set("document.open.recentlyDirPath", path.dirname(res.filePaths[0]));
-
-            thiz.loadDocument(res.filePaths[0], callback);
-
         });
-    };
+        if (!res || !res.filePaths || res.filePaths.length <= 0) return;
+        Config.set("document.open.recentlyDirPath", path.dirname(res.filePaths[0]));
+
+        thiz.loadDocument(res.filePaths[0], callback);
+    }
 
     if (this.controller.modified) {
         this.confirmAndSaveDocument(handler);
@@ -62,7 +60,7 @@ DocumentHandler.prototype.openDocument = function (callback) {
     }
 }
 
-DocumentHandler.prototype.loadDocument = function(filePath, callback){
+DocumentHandler.prototype.loadDocument = async function(filePath, callback) {
     var ext = path.extname(filePath);
     var handler = this.handlerRegistry[ext];
     if (handler == null || handler.loadDocument == null) {
@@ -82,23 +80,22 @@ DocumentHandler.prototype.loadDocument = function(filePath, callback){
         this.controller.applicationPane.pageListView.restartFilterCache();
         this.resetDocument();
 
-        handler.loadDocument(filePath)
-            .then(function () {
-                thiz.controller.modified = false;
-                try {
-                    if (callback) callback();
-                } finally {
-                    ApplicationPane._instance.unbusy();
-                }
-            })
-            .catch(function (err) {
-                thiz.controller.modified = false;
-                try {
-                    if (callback) callback(err);
-                } finally {
-                    ApplicationPane._instance.unbusy();
-                }
-            });
+        try {
+            await handler.loadDocument(filePath);
+            thiz.controller.modified = false;
+            try {
+                if (callback) callback();
+            } finally {
+                ApplicationPane._instance.unbusy();
+            }
+        } catch (err) {
+            thiz.controller.modified = false;
+            try {
+                if (callback) callback(err);
+            } finally {
+                ApplicationPane._instance.unbusy();
+            }
+        }
     }
 };
 
@@ -117,7 +114,7 @@ DocumentHandler.prototype.loadDocumentFromArguments = function (filePath) {
 
 }
 
-DocumentHandler.prototype.pickupTargetFileToSave = function (callback) {
+DocumentHandler.prototype.pickupTargetFileToSave = async function(callback) {
     var filters = [];
     var defaultFileType = this.getDefaultFileType();
     for (var type in this.handlerRegistry) {
@@ -148,34 +145,33 @@ DocumentHandler.prototype.pickupTargetFileToSave = function (callback) {
     var defaultPath = path.join(fileDir, fileName);
     var thiz = this;
 
-    dialog.showSaveDialog(remote.getCurrentWindow(), {
+    const res = await dialog.showSaveDialog(remote.getCurrentWindow(), {
         title: "Save as",
         defaultPath: defaultPath,
         filters: filters
-    }).then(function (res) {
-        if (res && res.filePath) {
-            var filePath = res.filePath;
-            var ext = path.extname(filePath);
-            if (ext != defaultFileType && fs.existsSync(filePath)) {
-                Dialog.confirm("Are you sure you want to overwrite the existing file?", filePath,
-                    "Yes, overwrite", function () {
-                        Config.set("document.save.recentlyDirPath", path.dirname(filePath));
-                        if (callback) {
-                            callback(filePath);
-                        }
-                    },
-                    "No", function () {
-                        thiz.pickupTargetFileToSave(callback);
-                    });
-
-                return;
-            }
-            Config.set("document.save.recentlyDirPath", path.dirname(filePath));
-        }
-        if (callback) {
-            callback(res.filePath);
-        }
     });
+    if (res && res.filePath) {
+        var filePath = res.filePath;
+        var ext = path.extname(filePath);
+        if (ext != defaultFileType && fs.existsSync(filePath)) {
+            Dialog.confirm("Are you sure you want to overwrite the existing file?", filePath,
+                "Yes, overwrite", function() {
+                    Config.set("document.save.recentlyDirPath", path.dirname(filePath));
+                    if (callback) {
+                        callback(filePath);
+                    }
+                },
+                "No", function() {
+                    thiz.pickupTargetFileToSave(callback);
+                });
+
+            return;
+        }
+        Config.set("document.save.recentlyDirPath", path.dirname(filePath));
+    }
+    if (callback) {
+        callback(res.filePath);
+    }
 };
 DocumentHandler.prototype.getHandlerForFilePath = function (filePath) {
     return this.handlerRegistry[path.extname(filePath)];
@@ -210,33 +206,32 @@ DocumentHandler.prototype.saveDocument = function (onSaved) {
     }
 };
 
-DocumentHandler.prototype._saveBoundDocument = function (onSaved) {
+DocumentHandler.prototype._saveBoundDocument = function(onSaved) {
     this.isSaving = true;
     ApplicationPane._instance.busy();
     this.controller.updateCanvasState();
 
     var thiz = this;
-    this.controller.serializeDocument(function () {
+    this.controller.serializeDocument(async function() {
         thiz.controller.addRecentFile(thiz.controller.documentPath, thiz.controller.getCurrentDocumentThumbnail());
-        thiz.getActiveHandler().saveDocument(thiz.controller.documentPath)
-            .then(function () {
-                ApplicationPane._instance.unbusy();
-                thiz.isSaving = false;
-                thiz.controller.sayDocumentSaved();
+        try {
+            await thiz.getActiveHandler().saveDocument(thiz.controller.documentPath);
+            ApplicationPane._instance.unbusy();
+            thiz.isSaving = false;
+            thiz.controller.sayDocumentSaved();
 
-                if (onSaved) onSaved();
+            if (onSaved) onSaved();
 
-                thiz.controller.applicationPane.onDocumentChanged();
-                thiz.controller.sayControllerStatusChanged();
-            })
-            .catch (function (err) {
-                ApplicationPane._instance.unbusy();
-                thiz.isSaving = false;
-                Dialog.error("Error when saving document: " + err);
+            thiz.controller.applicationPane.onDocumentChanged();
+            thiz.controller.sayControllerStatusChanged();
+        } catch (err) {
+            ApplicationPane._instance.unbusy();
+            thiz.isSaving = false;
+            Dialog.error("Error when saving document: " + err);
 
-                thiz.controller.applicationPane.onDocumentChanged();
-                thiz.controller.sayControllerStatusChanged();
-            });
+            thiz.controller.applicationPane.onDocumentChanged();
+            thiz.controller.sayControllerStatusChanged();
+        }
     });
 };
 

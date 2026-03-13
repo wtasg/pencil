@@ -72,7 +72,7 @@ function SettingDialog() {
             Config.set(configName, node.value);
             this.setPreferenceItems();
             if (configName == "view.uiTextScale") {
-                widget.reloadDesktopFont().then(function () {});
+                widget.reloadDesktopFont();
             }
         }
 

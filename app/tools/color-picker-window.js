@@ -8,7 +8,7 @@ ipc.on("request", (event, message) => {
     init(event.sender, message);
 })
 
-function init(requester, message) {
+async function init(requester, message) {
     var capturer = require("electron-screencapture");
 
     capturedImage = document.getElementById("capturedImage");
@@ -25,18 +25,17 @@ function init(requester, message) {
     var win = remote.getCurrentWindow();
     console.log(display);
 
-    capturer.takeScreenshot({x: display.bounds.x, y: display.bounds.y, width: display.bounds.width, height: display.bounds.height, sourceId: display.id})
-        .then(function (capturedImageURL) {
-            capturedImage.src = capturedImageURL;
-            win.show();
-            window.setTimeout(function () {
-                console.log("Sending back..." + message.messageId);
-                const BrowserWindow = remote.BrowserWindow;
-                var requesterWindow = BrowserWindow.fromId(message.senderId);
-                requesterWindow.webContents.send(message.messageId, capturedImageURL);
-            }, 100);
-        })
-        .catch(function (error) {
-            callback(null, error);
-        });
+    try {
+        const capturedImageURL = await capturer.takeScreenshot({x: display.bounds.x, y: display.bounds.y, width: display.bounds.width, height: display.bounds.height, sourceId: display.id});
+        capturedImage.src = capturedImageURL;
+        win.show();
+        window.setTimeout(function() {
+            console.log("Sending back..." + message.messageId);
+            const BrowserWindow = remote.BrowserWindow;
+            var requesterWindow = BrowserWindow.fromId(message.senderId);
+            requesterWindow.webContents.send(message.messageId, capturedImageURL);
+        }, 100);
+    } catch (error) {
+        console.error(error);
+    }
 };

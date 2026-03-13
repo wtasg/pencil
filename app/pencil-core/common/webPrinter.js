@@ -38,26 +38,22 @@ module.exports = function () {
                     //         }
                     //     }
                     // });
-                    browserWindow.webContents.printToPDF(options).then(function(pdfBuffer) {
-                        fs.writeFile(data.targetFilePath, pdfBuffer, function(error) {
-                            try {
-                                if (error) {
-                                    global.mainWindow.webContents.send(data.id, {success: false, message: error.message});
-                                    return;
-                                }
-
-                                global.mainWindow.webContents.send(data.id, {success: true});
-                            } finally {
-                                __callback();
-                            }
-                        }).catch (function (error) {
-                            try {
-                                global.mainWindow.webContents.send(data.id, {success: false, message: error.message});
-                            } finally {
-                                __callback();
-                            }
-                        })
-                    });
+                    (async function() {
+                        try {
+                            const pdfBuffer = await browserWindow.webContents.printToPDF(options);
+                            await new Promise((resolve, reject) => {
+                                fs.writeFile(data.targetFilePath, pdfBuffer, (error) => {
+                                    if (error) reject(error);
+                                    else resolve();
+                                });
+                            });
+                            global.mainWindow.webContents.send(data.id, {success: true});
+                        } catch (error) {
+                            global.mainWindow.webContents.send(data.id, {success: false, message: error.message});
+                        } finally {
+                            __callback();
+                        }
+                    })();
                 } else {
                     global.mainWindow.webContents.send(data.id, {success: true});
                     browserWindow.webContents.print(options, function () {
