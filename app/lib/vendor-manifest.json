@@ -1,7 +1,7 @@
 {
   "packages": {
     "bootstrap": {
-      "version": "3.4.1"
+      "version": "5.3.8"
     },
     "codemirror": {
       "version": "5.65.18"
@@ -14,6 +14,11 @@
     }
   },
   "files": [
+    {
+      "path": "lib/bootstrap/bootstrap.min.css",
+      "package": "bootstrap",
+      "sha256": "d85327d99c7a3ee1f9b5d0500d1370acea3ad2db39c163c2f51f232baedbdede"
+    },
     {
       "path": "lib/codemirror/codemirror.css",
       "package": "codemirror",
@@ -38,6 +43,11 @@
       "path": "lib/codemirror/xml.js",
       "package": "codemirror",
       "sha256": "dc7e44d410399326f802e2924573cbf6f942a79f647fd0b97f0b607973bc9a09"
+    },
+    {
+      "path": "lib/font-awesome-4.4.0/css/font-awesome.min.css",
+      "package": "font-awesome",
+      "sha256": "799aeb25cc0373fdee0e1b1db7ad6c2f6a0e058dfadaa3379689f583213190bd"
     },
     {
       "path": "lib/mdi/css/materialdesignicons.min.css",

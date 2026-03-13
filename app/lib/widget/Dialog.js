@@ -145,7 +145,7 @@ widget.Dialog = function() {
                 "      <div class=\"modal-header\" id=\"" + headerId + "\">\n" +
                 (
                         this.closeHandlerAction ?
-                                "<button type=\"button\" class=\"close\" data-dismiss=\"modal\" id=\"" + closeId + "\"><span aria-hidden=\"true\">&times;</span><span class=\"sr-only\">Close</span></button>\n" : ""
+                            "<button type=\"button\" class=\"btn-close\" data-bs-dismiss=\"modal\" id=\"" + closeId + "\" aria-label=\"Close\"></button>\n" : ""
 
                 ) +
                 "        <h4 class=\"modal-title\">" + (!builder.image ? ("<span class=\"fa " + builder.icon + "\"></span>")
@@ -169,7 +169,7 @@ widget.Dialog = function() {
                         " action-index=\"" + i + "\"" +
                         " class=\"btn " +
                         (widget.evaluate(action.excluded, this.builder) ? " btn-excluded " : "") +
-                        (widget.evaluate(action.primary, this.builder) ? "btn-primary " : widget.evaluate(action.isImportant, this.builder) ? "" : "btn-default ") +
+                        (widget.evaluate(action.primary, this.builder) ? "btn-primary " : widget.evaluate(action.isImportant, this.builder) ? "" : "btn-secondary ") +
                         (widget.evaluate(action.extra, this.builder) ? " btn-extra " : "") +
                         (widget.evaluate(action.isImportant, this.builder) ? " btn-danger" : "") +
                         "\">" +

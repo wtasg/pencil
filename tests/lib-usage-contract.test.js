@@ -67,8 +67,36 @@ describe('app/lib runtime contract', () => {
         expect(manifest.packages.codemirror.version).toBeTruthy();
         expect(manifest.packages['@mdi/font'].version).toBeTruthy();
         expect(Array.isArray(manifest.files)).toBe(true);
+        expect(manifest.files.some(file => file.path === 'lib/bootstrap/bootstrap.min.css')).toBe(true);
+        expect(manifest.files.some(file => file.path === 'lib/font-awesome-4.4.0/css/font-awesome.min.css')).toBe(true);
         expect(manifest.files.some(file => file.path === 'lib/mdi/css/materialdesignicons.min.css')).toBe(true);
         expect(manifest.files.some(file => file.path === 'lib/codemirror/codemirror.js')).toBe(true);
+    });
+
+    test('live stylesheet imports bootstrap 5 and font awesome css assets', () => {
+        const pencilCss = read(path.join(REPO_ROOT, 'app', 'css', 'pencil.css'));
+
+        expect(pencilCss).toContain('@import "../lib/bootstrap/bootstrap.min.css";');
+        expect(pencilCss).toContain('@import "../lib/font-awesome-4.4.0/css/font-awesome.min.css";');
+        expect(pencilCss).not.toContain('../lib/bootstrap/bootstrap.less');
+    });
+
+    test('bootstrap 3 compatibility leftovers are removed', () => {
+        const bootstrapFix = path.join(REPO_ROOT, 'app', 'css', 'bootstrap-fix.less');
+        expect(fs.existsSync(bootstrapFix)).toBe(false);
+
+        const dialogJs = read(path.join(REPO_ROOT, 'app', 'lib', 'widget', 'Dialog.js'));
+        const mapViewJs = read(path.join(REPO_ROOT, 'app', 'lib', 'widget', 'MapView.js'));
+
+        expect(dialogJs).toContain('btn-secondary');
+        expect(mapViewJs).toContain('btn btn-secondary');
+        expect(mapViewJs).toContain('popover-header');
+        expect(mapViewJs).toContain('popover-body');
+
+        expect(dialogJs).not.toContain('btn-default');
+        expect(mapViewJs).not.toContain('btn-default');
+        expect(mapViewJs).not.toContain('popover-title');
+        expect(mapViewJs).not.toContain('popover-content');
     });
 
     test('dead legacy files are removed', () => {

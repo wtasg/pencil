@@ -1,9 +1,5 @@
-/*
-@import "../lib/bootstrap/bootstrap.less";
-@import "../lib/bootstrap/theme.less";
-@import "bootstrap-fix.less";
-@import "../lib/font-awesome-4.4.0/less/font-awesome.less";
-*/
+@import "../lib/bootstrap/bootstrap.min.css";
+@import "../lib/font-awesome-4.4.0/css/font-awesome.min.css";
 @import "../lib/mdi/css/materialdesignicons.min.css";
 .hbox {
   flex-direction: row;
@@ -185,7 +181,7 @@ body[loaded] #bootingIndicator {
 @keyframes pulsate {
   0% {
     transform: scale(0.7);
-    opacity: 0.0;
+    opacity: 0;
   }
   50% {
     opacity: 1;
@@ -194,10 +190,6 @@ body[loaded] #bootingIndicator {
     transform: scale(1.1);
     opacity: 0;
   }
-}
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
 }
 html {
   user-select: none;
