@@ -1,0 +1,68 @@
+{
+  "packages": {
+    "bootstrap": {
+      "version": "3.4.1"
+    },
+    "codemirror": {
+      "version": "5.65.18"
+    },
+    "font-awesome": {
+      "version": "4.7.0"
+    },
+    "@mdi/font": {
+      "version": "7.4.47"
+    }
+  },
+  "files": [
+    {
+      "path": "lib/codemirror/codemirror.css",
+      "package": "codemirror",
+      "sha256": "eb494ea972d2661ef86f7f6ac656dd6786d721e49c9c1b46e1eb967e4b6f9bf3"
+    },
+    {
+      "path": "lib/codemirror/codemirror.js",
+      "package": "codemirror",
+      "sha256": "edc03cf5294adb8f68eed55f8845888aa0c403a6445b15f80a8666a1f540d78b"
+    },
+    {
+      "path": "lib/codemirror/htmlmixed.js",
+      "package": "codemirror",
+      "sha256": "fe5912e1d10f8fecb98bd31e2f957c0bbc9abf6b505d11b6dbcd27542d0fdcad"
+    },
+    {
+      "path": "lib/codemirror/javascript.js",
+      "package": "codemirror",
+      "sha256": "1311c73c66308ba6f78512b4c2e770a6900c80c3629683763329668ee6111163"
+    },
+    {
+      "path": "lib/codemirror/xml.js",
+      "package": "codemirror",
+      "sha256": "dc7e44d410399326f802e2924573cbf6f942a79f647fd0b97f0b607973bc9a09"
+    },
+    {
+      "path": "lib/mdi/css/materialdesignicons.min.css",
+      "package": "@mdi/font",
+      "sha256": "03fe3caba05e65b14e4035139eee89b12be87cd0bcf342ac3886770eec3a9962"
+    },
+    {
+      "path": "lib/mdi/fonts/materialdesignicons-webfont.eot",
+      "package": "@mdi/font",
+      "sha256": "0b183104d2fc5f26196e773c77bdaf2e05509fd4259d2d15ecedca79b87e84f9"
+    },
+    {
+      "path": "lib/mdi/fonts/materialdesignicons-webfont.ttf",
+      "package": "@mdi/font",
+      "sha256": "61e8aba5a4e981fe22cf7c8e8bcdbea00476e75c62c37f01bf7ee33361d68428"
+    },
+    {
+      "path": "lib/mdi/fonts/materialdesignicons-webfont.woff",
+      "package": "@mdi/font",
+      "sha256": "a5928a0d5c2f624e46f98d9b15c2f60045377f7c594dd78a1759132ea3b463eb"
+    },
+    {
+      "path": "lib/mdi/fonts/materialdesignicons-webfont.woff2",
+      "package": "@mdi/font",
+      "sha256": "662fefa8f2f8a95c18588d21774789c107c64e771cbe65a69af46291c4311afc"
+    }
+  ]
+}

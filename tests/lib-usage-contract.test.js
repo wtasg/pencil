@@ -6,8 +6,8 @@ const path = require('path');
 
 const REPO_ROOT = path.join(__dirname, '..');
 const APP_XHTML = path.join(REPO_ROOT, 'app', 'app.xhtml');
-const APP_UNDERSCORE_XHTML = path.join(REPO_ROOT, 'app', 'app_.xhtml');
 const APP_DIR = path.join(REPO_ROOT, 'app');
+const VENDOR_MANIFEST = path.join(REPO_ROOT, 'app', 'lib', 'vendor-manifest.json');
 
 function read(filePath) {
     return fs.readFileSync(filePath, 'utf8');
@@ -42,12 +42,77 @@ describe('app/lib runtime contract', () => {
         }
     });
 
-    test('legacy app_.xhtml is the only in-repo consumer of common-dom.js', () => {
-        const oldXhtml = read(APP_UNDERSCORE_XHTML);
-        expect(oldXhtml).toContain('src="lib/common-dom.js"');
+    test('vendored MDI file set exists in app/lib', () => {
+        const mdiCss = path.join(REPO_ROOT, 'app', 'lib', 'mdi', 'css', 'materialdesignicons.min.css');
+        const mdiFontsDir = path.join(REPO_ROOT, 'app', 'lib', 'mdi', 'fonts');
+        const expectedFonts = [
+            'materialdesignicons-webfont.eot',
+            'materialdesignicons-webfont.ttf',
+            'materialdesignicons-webfont.woff',
+            'materialdesignicons-webfont.woff2'
+        ];
+
+        expect(fs.existsSync(mdiCss)).toBe(true);
+        for (const fileName of expectedFonts) {
+            expect(fs.existsSync(path.join(mdiFontsDir, fileName))).toBe(true);
+        }
+    });
+
+    test('vendor manifest exists and records synced package versions', () => {
+        expect(fs.existsSync(VENDOR_MANIFEST)).toBe(true);
+        const manifest = JSON.parse(fs.readFileSync(VENDOR_MANIFEST, 'utf8'));
+
+        expect(manifest.packages.bootstrap.version).toBeTruthy();
+        expect(manifest.packages['font-awesome'].version).toBeTruthy();
+        expect(manifest.packages.codemirror.version).toBeTruthy();
+        expect(manifest.packages['@mdi/font'].version).toBeTruthy();
+        expect(Array.isArray(manifest.files)).toBe(true);
+        expect(manifest.files.some(file => file.path === 'lib/mdi/css/materialdesignicons.min.css')).toBe(true);
+        expect(manifest.files.some(file => file.path === 'lib/codemirror/codemirror.js')).toBe(true);
+    });
+
+    test('dead legacy files are removed', () => {
+        const removedFiles = [
+            path.join(REPO_ROOT, 'app', 'app_.xhtml'),
+            path.join(REPO_ROOT, 'app', 'lib', 'common-dom.js'),
+            path.join(REPO_ROOT, 'app', 'lib', 'loader.js')
+        ];
+
+        for (const filePath of removedFiles) {
+            expect(fs.existsSync(filePath)).toBe(false);
+        }
+    });
+
+    test('live app source does not reference removed legacy files', () => {
+        const scanExts = ['.js', '.xhtml', '.html', '.xml', '.less', '.css'];
+        const skipDirs = new Set(['node_modules', 'archive', 'dist']);
+        const refs = [];
+
+        function walk(dir) {
+            for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+                const abs = path.join(dir, entry.name);
+                if (entry.isDirectory()) {
+                    if (!skipDirs.has(entry.name)) walk(abs);
+                    continue;
+                }
+                if (!scanExts.some(ext => entry.name.endsWith(ext))) continue;
+                const content = fs.readFileSync(abs, 'utf8');
+                if (
+                    content.includes('app_.xhtml') ||
+                    content.includes('common-dom.js') ||
+                    content.includes('loader.js')
+                ) {
+                    refs.push(path.relative(REPO_ROOT, abs));
+                }
+            }
+        }
+
+        walk(APP_DIR);
+        expect(refs).toEqual([]);
 
         const mainXhtml = read(APP_XHTML);
-        expect(mainXhtml).not.toContain('src="lib/common-dom.js"');
+        expect(mainXhtml).not.toContain('common-dom.js');
+        expect(mainXhtml).not.toContain('loader.js');
     });
 
     test('compat shims exist and remain importable for tests/tooling', () => {
