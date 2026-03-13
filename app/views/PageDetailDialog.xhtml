@@ -1,0 +1,104 @@
+<vbox class="Form">
+    <style>
+        > .InputRow + .InputRow {
+            margin-top: 1em;
+        }
+        > .Description {
+            margin-bottom: 1.2em;
+        }
+        > .Description,
+        > label {
+            color: #666666;
+        }
+        > label {
+            min-width: 6em;
+        }
+        .InputRow input[type="number"] {
+            max-width: 4em;
+            text-align: center;
+        }
+        @sizeInputContainer {
+            align-items: center;
+        }
+        @sizeInputContainer > div + * {
+            margin-left: 0.5em;
+        }
+        @sizeInputContainer > div {
+            position: relative;
+        }
+        @sizeInputContainer input[type="number"] {
+            padding-left: 2em;
+            max-width: 6em;
+        }
+        @sizeInputContainer > div::after {
+            position: absolute;
+            top: 50%;
+            left: 0.5ex;
+            display: block;
+            line-height: 1em;
+            height: 1em;
+            margin-top: -0.5em;
+            opacity: 0.5;
+        }
+        @pageSizeCombo {
+            margin-left: 0.5em;
+        }
+        @widthWrapper::after {
+            content: "W:";
+        }
+        @heightWrapper::after {
+            content: "H:";
+        }
+        @pageTitle {
+            min-width: 30em;
+        }
+        @copyLinksBox {
+            align-items: center;
+            margin-top: 0.5em;
+        }
+        @copyLinksBox > * + * {
+            margin-left: 0.5em;
+        }
+        @colorButton {
+            margin-left: 0.5em;
+        }
+    </style>
+    <hbox class="InputRow">
+        <label for="pageCombo">Child of:</label>
+        <ui:ComboManager flex="1" anon-id="pageCombo"/>
+    </hbox>
+    <hbox class="InputRow">
+        <label for="pageTitle">Page Title:</label>
+        <input type="text" anon-id="pageTitle" flex="1"/>
+    </hbox>
+    <hbox class="InputRow">
+        <label for="pageSizeCombo">Page Size:</label>
+        <hbox flex="1">
+            <hbox anon-id="sizeInputContainer">
+                <div anon-id="widthWrapper">
+                    <input type="number" anon-id="widthInput" min="24" value="24"/>
+                </div>
+                <div anon-id="heightWrapper">
+                    <input type="number" anon-id="heightInput" min="24" value="24"/>
+                </div>
+            </hbox>
+            <ui:ComboManager anon-id="pageSizeCombo"/>
+        </hbox>
+    </hbox>
+    <hbox class="InputRow">
+        <label for="backgroundColorCombo">Background:</label>
+        <vbox flex="1">
+            <hbox>
+                <ui:ComboManager flex="1" anon-id="backgroundCombo"/>
+                <button anon-id="colorButton" value="choose" ><i>color_lens</i></button>
+                <ui:Popup anon-id="selectorContainer">
+                    <ui:ColorSelector anon-id="selector" />
+                </ui:Popup>
+            </hbox>
+            <hbox anon-id="copyLinksBox">
+                <input type="checkbox" anon-id="copyLinksCheckbox" />
+                <label for="copyLinksCheckbox" anon-id="copyLinksLabel">Copy links from background page</label>
+            </hbox>
+        </vbox>
+    </hbox>
+</vbox>

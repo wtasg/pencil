@@ -1,0 +1,44 @@
+<button anon-id="colorButton">
+    <style>
+        @colorButton {
+            width: 30px;
+            height: 30px;
+            padding: 0px !important;
+            /*color: #F00;*/
+        }
+        body .ColorDisplay {
+            font-size: 1em;
+            width: 1.2em;
+            height: 1.2em;
+            line-height: 1em;
+            text-align: center;
+            vertical-align: middle;
+            display: inline-block;
+            margin: 0px;
+            font-weight: 900;
+            font-family: 'PencilUI' !important;
+
+            box-sizing: border-box;
+            border: solid 2px transparent;
+            text-shadow: 1px 1px 0px #FFF;
+        }
+        body .SharedColorEditorPopup {
+            z-index: 9999;
+        }
+
+        @colorDisplay[property-name="textColor"].LowContrast {
+            text-shadow: 1px 1px 2px #00000044, -1px -1px 2px #00000044, -1px 1px 2px #00000044, 1px -1px 2px #00000044;
+        }
+        @colorDisplay[property-name="fillColor"].LowContrast {
+            box-shadow: 0px 0px 3px #00000044;
+        }
+        @colorDisplay[property-name="strokeColor"].LowContrast {
+            filter: drop-shadow(0px 0px 1px rgba(0, 0, 0, 0.5));
+        }
+    </style>
+
+    <span anon-id="colorDisplay" class="ColorDisplay"></span>
+    <ui:Popup anon-id="selectorContainer">
+        <ui:ColorSelector anon-id="selector" />
+    </ui:Popup>
+</button>
