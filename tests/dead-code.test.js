@@ -60,6 +60,13 @@ describe('Dead source files — confirmed removed from live codebase', () => {
             expect(fs.existsSync(path.join(APP_DIR, rel))).toBe(false);
         });
     }
+
+    test('app.xhtml does not include removed dead files', () => {
+        const appXhtml = fs.readFileSync(path.join(APP_DIR, 'app.xhtml'), 'utf8');
+        for (const rel of deadFiles) {
+            expect(appXhtml).not.toContain(rel);
+        }
+    });
 });
 
 describe('app/archive — legacy XUL directory not referenced by live code', () => {
