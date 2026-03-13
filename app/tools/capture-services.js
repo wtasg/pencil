@@ -21,15 +21,8 @@ BaseCmdCaptureService.prototype.capture = function (options) {
     var thiz = this;
     return (async function() {
         var cmd = thiz.buildCommandLine(options);
-        await new Promise(function(resolve, reject) {
-            require("child_process").execFile(cmd.path, cmd.args, function (error) {
-                if (error) {
-                    reject(error);
-                } else {
-                    resolve();
-                }
-            });
-        });
+        const execFileAsync = require("util").promisify(require("child_process").execFile);
+        await execFileAsync(cmd.path, cmd.args);
     })();
 };
 
@@ -229,160 +222,158 @@ function ElectronScreenshotService() {
 
 ElectronScreenshotService.prototype = new BaseCmdCaptureService();
 
-ElectronScreenshotService.prototype.capture = function (options) {
+ElectronScreenshotService.prototype.capture = async function (options) {
     console.log("options", options);
-    return new Promise(function (resolve, reject) {
-        const { app, BrowserWindow } = require('@electron/remote');
-        const ipcRenderer = require('electron').ipcRenderer;
+    const { app, BrowserWindow } = require('@electron/remote');
+    const ipcRenderer = require('electron').ipcRenderer;
+    const util = require('util');
 
-        function canvasToFileProcessor(canvas, context) {
-            var dataURL = canvas.toDataURL("image/png");
-            var ni = nativeImage.createFromDataURL(dataURL);
+    function canvasToFileProcessor(canvas, context) {
+        var dataURL = canvas.toDataURL("image/png");
+        var ni = nativeImage.createFromDataURL(dataURL);
 
-            var tmp = require("tmp");
-            var filePath = tmp.tmpNameSync();
-            fs.writeFileSync(filePath, ni.toPNG());
+        var tmp = require("tmp");
+        var filePath = tmp.tmpNameSync();
+        fs.writeFileSync(filePath, ni.toPNG());
 
-            return filePath;
-        };
+        return filePath;
+    };
 
-        var displays = remote.screen.getAllDisplays();
+    var displays = remote.screen.getAllDisplays();
 
-        var imageFilePaths = [];
-        var index = -1;
-        (function next(){
-            index ++;
-            if (index >= displays.length) {
-                onFinishedCapturing();
-                return;
-            }
+    var imageFilePaths = [];
+    const captureStreamAsync = util.promisify(new Capturer().captureFullScreenData.bind(new Capturer()));
 
-            var display = displays[index];
-
-            new Capturer().captureFullScreenData({
-                    x: display.bounds.x,
-                    y: display.bounds.y,
-                    width: display.bounds.width,
-                    height: display.bounds.height,
-                    processor: canvasToFileProcessor
-                },
-                function (filePath, error) {
-                    if (!filePath) {
-                        reject(error);
-                        return;
-                    }
-
-                    imageFilePaths[index] = {
-                        filePath: filePath,
-                        display: display
-                    };
-                    next();
-                });
-        })();
-
-        var currentWindow = remote.getCurrentWindow();
-
-        function onFinishedCapturing() {
-            if (options && options.mode == "fullscreen") {
-                if (options.outputType == "file") {
-                    fs.createReadStream(imageFilePaths[0].filePath).pipe(fs.createWriteStream(options.outputPath));
-                }
-
-                window.setTimeout(resolve, 200);
-
-                return;
-            }
-
-            imageFilePaths.forEach(function (info, index) {
-                var browserWindow = new BrowserWindow({
-                        x: info.display.bounds.x,
-                        y: info.display.bounds.y,
-                        width: info.display.bounds.width,
-                        height: info.display.bounds.height,
-                        enableLargerThanScreen: false,
-                        show: false,
-                        autoHideMenuBar: true,
-                        frame: false,
-                        transparent: false,
-                        alwaysOnTop: true,
-                        fullscreen: true,
-                        webPreferences: {
-                            webSecurity: false,
-                            allowRunningInsecureContent: true,
-                            allowDisplayingInsecureContent: true,
-                            defaultEncoding: "UTF-8",
-                            nodeIntegration: true
-                        }
-                    });
-
-                var url = "file://" + app.getAppPath() + "/screenshot.xhtml?" +
-                            "i=" + encodeURIComponent(ImageData.filePathToURL(info.filePath)) +
-                            "&index=" + index +
-                            "&id=" + currentWindow.id;
-                browserWindow.loadURL(url);
-                browserWindow.once("ready-to-show", function () {
-                    browserWindow.show();
-                    browserWindow.focus();
-                    browserWindow.setSize(info.display.bounds.width, info.display.bounds.height, false);
-                });
-
-                info.browserWindow = browserWindow;
-            });
+    for (let index = 0; index < displays.length; index++) {
+        let display = displays[index];
+        let filePath = await captureStreamAsync({
+            x: display.bounds.x,
+            y: display.bounds.y,
+            width: display.bounds.width,
+            height: display.bounds.height,
+            processor: canvasToFileProcessor
+        });
+        if (!filePath) {
+            throw new Error("Failed to capture");
         }
+        imageFilePaths.push({
+            filePath: filePath,
+            display: display
+        });
+    }
 
-        ipcRenderer.once("region-canceled", function (event, args) {
-            imageFilePaths.forEach(function (info) {
-                try {
-                    info.browserWindow.destroy();
-                } catch (e) {}
+    var currentWindow = remote.getCurrentWindow();
 
-                try {
-                    fs.unlinkSync(info.filePath);
-                } catch (e) {}
+    if (options && options.mode == "fullscreen") {
+        if (options.outputType == "file") {
+            fs.createReadStream(imageFilePaths[0].filePath).pipe(fs.createWriteStream(options.outputPath));
+        }
+        const delay = util.promisify(setTimeout);
+        await delay(200);
+        return;
+    }
+
+    imageFilePaths.forEach(function (info, index) {
+        var browserWindow = new BrowserWindow({
+                x: info.display.bounds.x,
+                y: info.display.bounds.y,
+                width: info.display.bounds.width,
+                height: info.display.bounds.height,
+                enableLargerThanScreen: false,
+                show: false,
+                autoHideMenuBar: true,
+                frame: false,
+                transparent: false,
+                alwaysOnTop: true,
+                fullscreen: true,
+                webPreferences: {
+                    webSecurity: false,
+                    allowRunningInsecureContent: true,
+                    allowDisplayingInsecureContent: true,
+                    defaultEncoding: "UTF-8",
+                    nodeIntegration: true
+                }
             });
 
-            reject("canceled");
+        var url = "file://" + app.getAppPath() + "/screenshot.xhtml?" +
+                    "i=" + encodeURIComponent(ImageData.filePathToURL(info.filePath)) +
+                    "&index=" + index +
+                    "&id=" + currentWindow.id;
+        browserWindow.loadURL(url);
+        browserWindow.once("ready-to-show", function () {
+            browserWindow.show();
+            browserWindow.focus();
+            browserWindow.setSize(info.display.bounds.width, info.display.bounds.height, false);
         });
 
+        info.browserWindow = browserWindow;
+    });
+
+    const waitForIPC = util.promisify((cb) => {
+        ipcRenderer.once("region-canceled", function (event, args) {
+            cb(new Error("canceled"));
+        });
         ipcRenderer.once("region-selected", function (event, args) {
-            console.log("region-selected, args", args);
-            imageFilePaths.forEach(function (info) {
-                try {
-                    info.browserWindow.destroy();
-                } catch (e) {}
-            });
-
-            var selectedPath = imageFilePaths[args.index].filePath;
-
-            var image = new Image();
-            image.onload = function () {
-                var canvas = document.createElement("canvas");
-                canvas.width = args.width;
-                canvas.height = args.height;
-
-                var context = canvas.getContext("2d");
-                context.drawImage(image, args.x, args.y, args.width, args.height, 0, 0, args.width, args.height);
-
-                var dataURL = canvas.toDataURL("image/png");
-                var ni = nativeImage.createFromDataURL(dataURL);
-
-                fs.writeFileSync(options.outputPath, ni.toPNG());
-
-                canvas = null;
-                image.src = "";
-                image = null;
-
-                imageFilePaths.forEach(function (info) {
-                    try {
-                        fs.unlinkSync(info.filePath);
-                    } catch (e) {}
-                });
-
-                resolve();
-            };
-            image.src = ImageData.filePathToURL(selectedPath);
+            cb(null, args);
         });
     });
+
+    try {
+        const args = await waitForIPC();
+        console.log("region-selected, args", args);
+        imageFilePaths.forEach(function (info) {
+            try {
+                info.browserWindow.destroy();
+            } catch (e) {}
+        });
+
+        var selectedPath = imageFilePaths[args.index].filePath;
+        
+        var image = new Image();
+        const loadImgAsync = util.promisify((img, src, cb) => {
+            img.onload = () => cb(null);
+            img.onerror = (e) => cb(e || new Error("Image error"));
+            img.src = src;
+        });
+
+        await loadImgAsync(image, ImageData.filePathToURL(selectedPath));
+
+        var canvas = document.createElement("canvas");
+        canvas.width = args.width;
+        canvas.height = args.height;
+
+        var context = canvas.getContext("2d");
+        context.drawImage(image, args.x, args.y, args.width, args.height, 0, 0, args.width, args.height);
+
+        var dataURL = canvas.toDataURL("image/png");
+        var ni = nativeImage.createFromDataURL(dataURL);
+
+        fs.writeFileSync(options.outputPath, ni.toPNG());
+
+        canvas = null;
+        image.src = "";
+        image = null;
+
+        imageFilePaths.forEach(function (info) {
+            try {
+                fs.unlinkSync(info.filePath);
+            } catch (e) {}
+        });
+
+        return;
+    } catch (err) {
+        imageFilePaths.forEach(function (info) {
+            try {
+                info.browserWindow.destroy();
+            } catch (e) {}
+
+            try {
+                fs.unlinkSync(info.filePath);
+            } catch (e) {}
+        });
+
+        throw err;
+    }
 };
 
 ElectronScreenshotService.prototype.isSupported = function () {

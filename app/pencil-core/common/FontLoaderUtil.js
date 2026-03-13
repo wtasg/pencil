@@ -37,14 +37,19 @@ FontLoaderUtil.loadFontFaces = function (allFaces, callback) {
         face._type = installedFace.type;
 
         var addPromise = document.fonts.add(face);
-        addPromise.ready.then(async function() {
-            var fontCSS = installedFace.style + " " + installedFace.weight + " 1em '" + installedFace.name + "'";
-
+        (async () => {
             try {
-                await document.fonts.load(fontCSS);
-            } catch (e) {}
-            next();
-        }, next);
+                await addPromise.ready;
+                var fontCSS = installedFace.style + " " + installedFace.weight + " 1em '" + installedFace.name + "'";
+
+                try {
+                    await document.fonts.load(fontCSS);
+                } catch (e) {}
+                next();
+            } catch (err) {
+                next();
+            }
+        })();
     }
 
     next();

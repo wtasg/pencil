@@ -13,41 +13,54 @@ EpgzHandler.prototype.loadDocument = async function(filePath) {
     const tarfs = require('tar-fs');
     const thiz = this;
 
-    await new Promise(function(resolve, reject) {
-        var wrappedRejectCalled = false;
-        var wrappedReject = function(error) {
-            if (wrappedRejectCalled) return;
-            wrappedRejectCalled = true;
-            console.log(error);
-            var recoverable = fs.existsSync(path.join(Pencil.documentHandler.tempDir.name, "content.xml"));
-            if (!recoverable) {
-                reject(error);
-            } else {
-                ApplicationPane._instance.unbusy();
-
-                Dialog.confirm("File loading error", "There was an error that prevented your document from being fully loaded. The document file seems to be corrupted.\n" +
-                "Do you want Pencil to try loading the document anyway?",
-                    "Yes, try anyway", function() {
-                        ApplicationPane._instance.busy();
-                        thiz.parseDocument(filePath, resolve);
-                    },
-                    "Cancel", function() {
-                        ApplicationPane._instance.busy();
-                        reject(error);
-                    });
-            }
-        };
-
-        fs.createReadStream(filePath)
-            .pipe(zlib.Gunzip())
-            .on("error", wrappedReject)
-            .pipe(tarfs.extract(Pencil.documentHandler.tempDir.name, {readable: true, writable: true})
-                    .on("error", wrappedReject)
-                    .on("finish", function() {
-                        console.log("Successfully extracted.");
-                        thiz.parseDocument(filePath, resolve);
-                    }));
+    const parseAsync = require('util').promisify((fp, cb) => {
+        thiz.parseDocument(fp, function(result, err) {
+            cb(err, result);
+        });
     });
+
+    const streamPipeline = require('util').promisify(require('stream').pipeline);
+
+    try {
+        await streamPipeline(
+            fs.createReadStream(filePath),
+            zlib.Gunzip(),
+            tarfs.extract(Pencil.documentHandler.tempDir.name, {readable: true, writable: true})
+        );
+        console.log("Successfully extracted.");
+        return await parseAsync(filePath);
+    } catch (error) {
+        console.log(error);
+        var recoverable = fs.existsSync(path.join(Pencil.documentHandler.tempDir.name, "content.xml"));
+        if (!recoverable) {
+            throw error;
+        } else {
+            ApplicationPane._instance.unbusy();
+
+            const confirmAsync = require('util').promisify((msgTitle, msgBody, yesStr, noStr, cb) => {
+                Dialog.confirm(msgTitle, msgBody, yesStr, function() {
+                    cb(null, true);
+                }, noStr, function() {
+                    cb(null, false);
+                });
+            });
+
+            const proceed = await confirmAsync(
+                "File loading error", 
+                "There was an error that prevented your document from being fully loaded. The document file seems to be corrupted.\n" +
+                "Do you want Pencil to try loading the document anyway?",
+                "Yes, try anyway", 
+                "Cancel"
+            );
+
+            ApplicationPane._instance.busy();
+            if (proceed) {
+                return await parseAsync(filePath);
+            } else {
+                throw error;
+            }
+        }
+    }
 }
 
 EpgzHandler.prototype.saveDocument = async function(documentPath) {
@@ -74,5 +87,6 @@ EpgzHandler.prototype.saveDocument = async function(documentPath) {
 
     const compressor = new targz({}, tarOptions);
     console.log(compressor._options);
-    await compressor.compress(Pencil.documentHandler.tempDir.name, documentPath);
+    const compressAsync = require('util').promisify(compressor.compress.bind(compressor));
+    await compressAsync(Pencil.documentHandler.tempDir.name, documentPath);
 };

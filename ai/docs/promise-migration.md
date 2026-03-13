@@ -13,37 +13,53 @@
 
 ## Migration Strategy
 
-### Phase 1: Core/Foundation Layer (High Impact) - IN PROGRESS
+### Phase 1: Core/Foundation Layer - IN PROGRESS
+
 Priority: HIGH - These are foundational modules used by many others
 
-1. **collectionManager.js** (QP.Promise x2)
-2. **collectionRepository.js** (QP.Promise x1)
-3. **capture-services.js** (new Promise x2)
-4. **EpzHandler.js**, **EpgzHandler.js**, **EpHandler.js**
+| File | Remaining | Status |
+|------|-----------|--------|
+| collectionManager.js | 0 | ✅ Migrated |
+| collectionRepository.js | 0 | ✅ Migrated |
+| capture-services.js | 0 | ✅ Migrated |
+| EpzHandler.js | 0 | ✅ Migrated |
+| EpgzHandler.js | 0 | ✅ Migrated |
+| EpHandler.js | 0 | ✅ Migrated |
 
 ### Phase 2: UI/Widget Layer - IN PROGRESS
+
 Priority: MEDIUM - These use promises for UI operations
 
-1. **Common.js** (new Promise x1, .then x2)
-2. **CollectionResourceBrowserDialog.js** (new Promise x1, .then x1)
-3. **CollectionRepoBrowserView.js** (.then, .catch, .finally)
-4. **ExportDialog.js** (.then x2)
+| File | Remaining | Status |
+|------|-----------|--------|
+| Common.js | 0 | ✅ Migrated |
+| CollectionResourceBrowserDialog.js | 0 | ✅ Migrated |
+| CollectionRepoBrowserView.js | 0 | ✅ Migrated |
+| ExportDialog.js | 0 | ✅ Migrated |
 
 ### Phase 3: Editor/Canvas Layer
+
 Priority: MEDIUM - Canvas and editor operations
 
-1. **controller.js** (.then x3)
-2. **DocumentHandler.js** (.then x4)
-3. **imageData.js** (.then x2)
-4. **renderer.js** (.then, .catch)
+| File | Remaining | Status |
+|------|-----------|--------|
+| controller.js | 0 | ✅ Migrated |
+| DocumentHandler.js | 0 | ✅ Migrated |
+| imageData.js | 0 | ✅ Migrated |
+| renderer.js | 0 | ✅ Migrated |
 
 ### Phase 4: Utilities/External
+
 Priority: LOW - Helpers and external integrations
 
-1. **FontLoader.js**, **FontLoaderUtil.js**
-2. **webPrinter.js**
-3. **SettingDialog.js**, **FontDetailDialog.js**
-4. **color-picker-window.js**
+| File | Remaining | Status |
+|------|-----------|--------|
+| FontLoader.js | 0 | ✅ Migrated |
+| FontLoaderUtil.js | 0 | ✅ Migrated |
+| webPrinter.js | 0 | ✅ Migrated |
+| SettingDialog.js | 0 | ✅ Migrated |
+| FontDetailDialog.js | 0 | ✅ Migrated |
+| color-picker-window.js | 0 | ✅ Migrated |
 
 ## Tests Written
 
@@ -64,6 +80,7 @@ Priority: LOW - Helpers and external integrations
 ## Migration Patterns
 
 ### Pattern 1: QP.Promise → async function
+
 ```javascript
 // Before
 return QP.Promise(function(resolve, reject) {
@@ -80,6 +97,7 @@ async function operation() {
 ```
 
 ### Pattern 2: .then chain → async/await
+
 ```javascript
 // Before
 func1().then(a => func2(a)).then(b => func3(b));
@@ -93,6 +111,7 @@ async function main() {
 ```
 
 ### Pattern 3: new Promise → async function
+
 ```javascript
 // Before
 return new Promise(function(resolve, reject) {
@@ -118,6 +137,7 @@ async function read() {
 ## Testing
 
 Run tests after each phase:
+
 ```bash
 yarn test
 yarn start
@@ -126,15 +146,27 @@ yarn start
 ## Status
 
 - [x] Phase 1: Tests written
-- [x] Phase 1: Migration in progress
-  - [x] collectionManager.js (QP.Promise x2 → async/await)
-  - [x] collectionRepository.js (QP.Promise x1 → async/await)
-  - [x] capture-services.js (BaseCmdCaptureService.prototype.capture - simple pattern)
-  - [ ] capture-services.js (ElectronScreenshotService.prototype.capture - complex, skip for now)
-  - [ ] EpzHandler.js, EpgzHandler.js, EpHandler.js (complex patterns)
-- [ ] Phase 2: Tests pending
-- [ ] Phase 2: Migration pending
-- [ ] Phase 3: Tests pending
-- [ ] Phase 3: Migration pending
-- [ ] Phase 4: Tests pending
-- [ ] Phase 4: Migration pending
+- [x] Phase 1: Migration
+  - [x] collectionManager.js
+  - [x] collectionRepository.js
+  - [x] capture-services.js
+  - [x] EpzHandler.js
+  - [x] EpgzHandler.js
+  - [x] EpHandler.js
+- [x] Phase 2: Tests written
+  - [x] Common.js
+  - [x] CollectionResourceBrowserDialog.js
+  - [x] CollectionRepoBrowserView.js
+  - [x] ExportDialog.js
+- [x] Phase 3: Migration
+  - [x] controller.js
+  - [x] DocumentHandler.js
+  - [x] imageData.js
+  - [x] renderer.js
+- [x] Phase 4: Migration
+  - [x] FontLoader.js
+  - [x] FontLoaderUtil.js
+  - [x] webPrinter.js
+  - [x] SettingDialog.js
+  - [x] FontDetailDialog.js
+  - [x] color-picker-window.js

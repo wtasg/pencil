@@ -100,10 +100,8 @@ CollectionRepoBrowserView.prototype.loadCollectionList = async function() {
         const repo = await CollectionRepository.loadCollections(this.repo.url);
         this.collectionRepeater.node().style.visibility = "hidden";
 
-        window.setTimeout(() => {
-            this.collectionRepeater.setItems(repo.collections);
-            this.collectionRepeater.node().style.visibility = "inherit";
-        }, 10);
+        this.collectionRepeater.setItems(repo.collections);
+        this.collectionRepeater.node().style.visibility = "inherit";
     } catch (ex) {
         Dialog.error("Could not load collections list");
         console.log(ex);

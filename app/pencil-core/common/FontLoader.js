@@ -1,16 +1,6 @@
 function FontLoader() {
     this.userRepo = new FontRepository(Config.getDataFilePath("fonts"), FontRepository.TYPE_USER);
     this.documentRepo = null;
-    
-    // //TODO: remove this test
-    // var face = new FontFace(null, "url(file:///home/dgthanhan/.fonts/Signika-Bold.ttf) format('truetype')");
-    // var addPromise = document.fonts.add(face);
-    // addPromise.ready.then(function () {
-    //     document.fonts.forEach(function (fontFace) {
-    //         console.log(fontFace);
-    //     });
-    //     face.load();
-    // });
 }
 FontLoader.loadSystemFonts = function (callback) {
     FontLoader.systemRepo = new FontRepository(getStaticFilePath("fonts/core"), FontRepository.TYPE_SYSTEM);

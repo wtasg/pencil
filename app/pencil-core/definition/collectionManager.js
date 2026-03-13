@@ -351,12 +351,8 @@ CollectionManager.extractCollection = function(file, callback) {
         var zip = new admZip(filePath);
         
         try {
-            await new Promise(function(resolve, reject) {
-                zip.extractAllToAsync(targetDir, true, function(err) {
-                    if (err) reject(err);
-                    else resolve();
-                });
-            });
+            const extract = require('util').promisify(zip.extractAllToAsync.bind(zip));
+            await extract(targetDir, true);
             return targetDir;
         } catch (err) {
             if (callback) callback(err);

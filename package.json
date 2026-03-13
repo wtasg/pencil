@@ -1,115 +1,123 @@
 {
-  "name": "Pencil",
-  "version": "3.1.1",
-  "author": {
-    "name": "Evolus",
-    "url": "http://evolus.vn"
-  },
-  "description": "An open-source GUI prototyping tool that is available for ALL platforms.",
-  "devDependencies": {
-    "@electron/rebuild": "^4.0.3",
-    "electron": "35",
-    "electron-builder": "26",
-    "glob": "^13.0.6",
-    "jest": "^30.3.0",
-    "rimraf": "5",
-    "tar": "7.5.11"
-  },
-  "build": {
-    "appId": "vn.evolus.pencil",
-    "productName": "Pencil",
-    "directories": {
-      "output": "dist",
-      "app": "app"
+    "name": "Pencil",
+    "version": "2026.03.13-b001",
+    "author": {
+        "name": "wtasg",
+        "url": "https://github.com/wtasg"
     },
-    "files": [
-      "**/*"
-    ],
-    "extraMetadata": {
-      "main": "index.js"
+    "description": "An open-source GUI prototyping tool that is available for ALL platforms.",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/wtasg/pencil.git"
     },
-    "copyright": "Copyright © 2008-2016 Evolus. All rights reserved.",
-    "mac": {
-      "category": "public.app-category.graphics-design",
-      "target": [
-        {
-          "target": "dmg",
-          "arch": [
-            "arm64"
-          ]
-        }
-      ]
+    "bugs": {
+        "url": "https://github.com/wtasg/pencil/issues"
     },
-    "dmg": {
-      "contents": [
-        {
-          "x": 356,
-          "y": 140,
-          "type": "link",
-          "path": "/Applications"
+    "homepage": "https://github.com/wtasg/pencil#readme",
+    "devDependencies": {
+        "@electron/rebuild": "^4.0.3",
+        "electron": "35",
+        "electron-builder": "26",
+        "glob": "^13.0.6",
+        "jest": "^30.3.0",
+        "rimraf": "5",
+        "tar": "7.5.11"
+    },
+    "build": {
+        "appId": "wtasg.pencil",
+        "productName": "Pencil",
+        "directories": {
+            "output": "dist",
+            "app": "app"
         },
-        {
-          "x": 130,
-          "y": 145,
-          "type": "file"
+        "files": [
+            "**/*"
+        ],
+        "extraMetadata": {
+            "main": "index.js"
+        },
+        "copyright": "Copyright © 2026 wtasg. All rights reserved.",
+        "mac": {
+            "category": "public.app-category.graphics-design",
+            "target": [
+                {
+                    "target": "dmg",
+                    "arch": [
+                        "arm64"
+                    ]
+                }
+            ]
+        },
+        "dmg": {
+            "contents": [
+                {
+                    "x": 356,
+                    "y": 140,
+                    "type": "link",
+                    "path": "/Applications"
+                },
+                {
+                    "x": 130,
+                    "y": 145,
+                    "type": "file"
+                }
+            ]
+        },
+        "linux": {
+            "description": "An open-source GUI prototyping tool that is available for ALL platforms.",
+            "synopsis": "An open-source GUI prototyping tool that is available for ALL platforms.",
+            "maintainer": "wtasg",
+            "vendor": "wtasg",
+            "target": [
+                "deb",
+                "rpm",
+                "tar.gz"
+            ],
+            "category": "Graphics",
+            "packageCategory": "graphics"
+        },
+        "win": {
+            "target": "nsis"
+        },
+        "nsis": {
+            "oneClick": false,
+            "perMachine": true,
+            "allowToChangeInstallationDirectory": true
+        },
+        "electronDownload": {
+            "cache": ".electron-cache"
+        },
+        "fileAssociations": {
+            "ext": [
+                "ep",
+                "epz",
+                "epgz"
+            ],
+            "name": "Pencil Document"
         }
-      ]
     },
-    "linux": {
-      "description": "An open-source GUI prototyping tool that is available for ALL platforms.",
-      "synopsis": "An open-source GUI prototyping tool that is available for ALL platforms.",
-      "maintainer": "Nguyen Tien Dzung <ngtdungnt@gmail.com>",
-      "vendor": "Evolus",
-      "target": [
-        "deb",
-        "rpm",
-        "tar.gz"
-      ],
-      "category": "Graphics",
-      "packageCategory": "graphics"
+    "scripts": {
+        "postinstall": "electron-builder install-app-deps",
+        "start": "electron ./app --no-sandbox",
+        "start:dev": "electron ./app --no-sandbox --enable-dev",
+        "test": "jest",
+        "clean": "rimraf dist",
+        "dist": "electron-builder",
+        "dist:linux": "electron-builder --linux --x64",
+        "dist:win": "electron-builder --win",
+        "dist:mac": "electron-builder --mac",
+        "dist:win32": "electron-builder --win --x64",
+        "dist:osx": "electron-builder --mac"
     },
-    "win": {
-      "target": "nsis"
-    },
-    "nsis": {
-      "oneClick": false,
-      "perMachine": true,
-      "allowToChangeInstallationDirectory": true
-    },
-    "electronDownload": {
-      "cache": ".electron-cache"
-    },
-    "fileAssociations": {
-      "ext": [
-        "ep",
-        "epz",
-        "epgz"
-      ],
-      "name": "Pencil Document"
+    "private": true,
+    "dependencies": {
+        "@electron/remote": "^2.1.3",
+        "@mdi/font": "^7.4.47",
+        "less": "^4.6.3",
+        "lodash": "^4.17.23",
+        "moment": "^2.30.1",
+        "perfect-freehand": "^1.2.3",
+        "sharp": "^0.34.5",
+        "tmp": "^0.2.5"
     }
-  },
-  "scripts": {
-    "postinstall": "electron-builder install-app-deps",
-    "start": "electron ./app --no-sandbox",
-    "start:dev": "electron ./app --no-sandbox --enable-dev",
-    "test": "jest",
-    "clean": "rimraf dist",
-    "dist": "electron-builder",
-    "dist:linux": "electron-builder --linux --x64",
-    "dist:win": "electron-builder --win",
-    "dist:mac": "electron-builder --mac",
-    "dist:win32": "electron-builder --win --x64",
-    "dist:osx": "electron-builder --mac"
-  },
-  "private": true,
-  "dependencies": {
-    "@electron/remote": "^2.1.3",
-    "@mdi/font": "^7.4.47",
-    "less": "^4.6.3",
-    "lodash": "^4.17.23",
-    "moment": "^2.30.1",
-    "perfect-freehand": "^1.2.3",
-    "sharp": "^0.34.5",
-    "tmp": "^0.2.5"
-  }
 }

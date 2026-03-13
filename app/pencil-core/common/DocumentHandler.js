@@ -91,7 +91,11 @@ DocumentHandler.prototype.loadDocument = async function(filePath, callback) {
         } catch (err) {
             thiz.controller.modified = false;
             try {
-                if (callback) callback(err);
+                if (callback) {
+                    callback(err);
+                } else {
+                    throw err;
+                }
             } finally {
                 ApplicationPane._instance.unbusy();
             }

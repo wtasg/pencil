@@ -158,6 +158,10 @@ module.exports = function () {
                             event.sender.send(data.id, {url: dataURL, objectsWithLinking: renderedData.objectsWithLinking});
                             __callback();
                         } catch (e) {
+                            cleanupCallback();
+                            currentRenderHandler = null;
+                            event.sender.send(data.id, { error: e.message });
+                            __callback();
                             console.error(e);
                         }
                     }

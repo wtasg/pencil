@@ -11,19 +11,22 @@ EpzHandler.prototype.loadDocument = async function(filePath) {
     const admZip = require('adm-zip');
     const zip = new admZip(filePath);
 
-    await new Promise((resolve, reject) => {
-        zip.extractAllToAsync(Pencil.documentHandler.tempDir.name, true, function(err) {
-            if (err) {
-                reject(new Error("File could not be loaded: " + err));
-            } else {
-                resolve();
-            }
+    const util = require('util');
+    const extractAsync = util.promisify(zip.extractAllToAsync.bind(zip));
+    
+    try {
+        await extractAsync(Pencil.documentHandler.tempDir.name, true);
+    } catch (err) {
+        throw new Error("File could not be loaded: " + err);
+    }
+
+    const parseAsync = util.promisify((fp, cb) => {
+        this.parseDocument(fp, function(result, err) {
+            cb(err, result);
         });
     });
-
-    await new Promise((resolve) => {
-        this.parseDocument(filePath, resolve);
-    });
+    
+    return await parseAsync(filePath);
 };
 
 /*

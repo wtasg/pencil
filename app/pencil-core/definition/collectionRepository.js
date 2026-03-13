@@ -69,29 +69,32 @@ CollectionRepository.loadCollections = function(url) {
         };
 
         try {
-            await new Promise(function(resolve, reject) {
-                nugget(url || STENCILS_REPO_URL, nuggetOpts, function(errors) {
+            const util = require('util');
+            const download = util.promisify((dlUrl, opts, cb) => {
+                nugget(dlUrl, opts, (errors) => {
                     if (errors) {
                         var error = errors[0];
                         if (error.message.indexOf('404') === -1) {
                             Dialog.error(`Can not download stencil repository file: ${error.message}`);
-                            return reject(error);
+                            return cb(error);
                         }
-                        Dialog.error(`Failed to download repository at ${url}`);
-                        return reject(error);
+                        Dialog.error(`Failed to download repository at ${dlUrl}`);
+                        return cb(error);
                     }
-                    resolve();
+                    cb(null);
                 });
             });
+            await download(url || STENCILS_REPO_URL, nuggetOpts);
 
             var filepath = path.join(tempDir, filename);
             console.log('repo downloaded', filepath);
 
-            var data = await new Promise(function(resolve) {
-                CollectionRepository.parseFile(filepath, (data) => {
-                    resolve(data);
+            var parseFileAsync = util.promisify((fpath, cb) => {
+                CollectionRepository.parseFile(fpath, (parsedData) => {
+                    cb(null, parsedData);
                 });
             });
+            var data = await parseFileAsync(filepath);
             return data;
         } catch (err) {
             throw err;

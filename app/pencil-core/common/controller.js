@@ -1161,13 +1161,16 @@ Controller.prototype.rasterizeCurrentPage = async function(targetPage) {
     });
     if (!res || !res.filePath) return;
     var filePath = res.filePath;
-    this.applicationPane.rasterizer.rasterizePageToFile(page, filePath, function(p, error) {
-        if (!error) {
-            NotificationPopup.show("Page exported as '" + path.basename(filePath) + "'.", "View", function() {
-                shell.openPath(filePath);
-            });
-        }
-    }, undefined, false, options);
+    const rasterizeAsync = require('util').promisify((p, fp, z, db, opt, cb) => {
+        this.applicationPane.rasterizer.rasterizePageToFile(p, fp, function(p2, error) {
+            cb(error, p2);
+        }, z, db, opt);
+    });
+    
+    await rasterizeAsync(page, filePath, undefined, false, options);
+    NotificationPopup.show("Page exported as '" + path.basename(filePath) + "'.", "View", function() {
+        shell.openPath(filePath);
+    });
 };
 
 Controller.prototype.copyPageBitmap = function (targetPage) {
@@ -1231,14 +1234,17 @@ Controller.prototype.rasterizeSelection = async function(options) {
         var tmp = require("tmp");
         var filePath = tmp.tmpNameSync();
 
-        this.applicationPane.rasterizer.rasterizeSelectionToFile(target, filePath, function (p, error) {
-            if (!error) {
-                var image = nativeImage.createFromPath(filePath);
-                clipboard.writeImage(image);
-                fs.unlinkSync(filePath);
-                NotificationPopup.show("Page bitmap copied into clipboard.");
-            }
-        }, undefined, options);
+        const rasterizeSelAsync = require('util').promisify((t, fp, z, opt, cb) => {
+            this.applicationPane.rasterizer.rasterizeSelectionToFile(t, fp, function(p2, error) {
+                cb(error, p2);
+            }, z, opt);
+        });
+        
+        await rasterizeSelAsync(target, filePath, undefined, options);
+        var image = nativeImage.createFromPath(filePath);
+        clipboard.writeImage(image);
+        fs.unlinkSync(filePath);
+        NotificationPopup.show("Page bitmap copied into clipboard.");
     } else {
         const res = await dialog.showSaveDialog({
             title: "Export selection as PNG",
@@ -1249,13 +1255,16 @@ Controller.prototype.rasterizeSelection = async function(options) {
         });
         if (!res || !res.filePath) return;
         var filePath = res.filePath;
-        this.applicationPane.rasterizer.rasterizeSelectionToFile(target, filePath, function(p, error) {
-            if (!error) {
-                NotificationPopup.show("Selection exported as '" + path.basename(filePath) + "'.", "View", function() {
-                    shell.openPath(filePath);
-                });
-            }
-        }, undefined, options);
+        const rasterizeSelAsync = require('util').promisify((t, fp, z, opt, cb) => {
+            this.applicationPane.rasterizer.rasterizeSelectionToFile(t, fp, function(p2, error) {
+                cb(error, p2);
+            }, z, opt);
+        });
+
+        await rasterizeSelAsync(target, filePath, undefined, options);
+        NotificationPopup.show("Selection exported as '" + path.basename(filePath) + "'.", "View", function() {
+            shell.openPath(filePath);
+        });
     }
 
 };
@@ -1690,10 +1699,15 @@ Controller.prototype.exportAsLayout = async function() {
     if (!res || !res.filePath) return;
     var filePath = res.filePath;
     outputPath = filePath;
-    outputImage = path.join(path.dirname(outputPath), IMAGE_FILE);
-    Pencil.rasterizer.rasterizePageToFile(thiz.activePage, outputImage, function(p, error) {
-        done();
+    var outputImage = path.join(path.dirname(outputPath), IMAGE_FILE);
+    const rasterizePageAsync = require('util').promisify((p, fp, cb) => {
+        Pencil.rasterizer.rasterizePageToFile(p, fp, function(p2, error) {
+            cb(error, p2);
+        });
     });
+    
+    await rasterizePageAsync(thiz.activePage, outputImage);
+    done();
 };
 
 Controller.prototype.getDocumentPageMargin = function () {

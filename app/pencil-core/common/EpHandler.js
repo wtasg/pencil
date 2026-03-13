@@ -76,13 +76,10 @@ EpHandler.prototype.loadDocument = async function(filePath, callback) {
         throw new Error("File not found.");
     }
 
-    await new Promise((resolve, reject) => {
-        this.parseOldFormatDocument(filePath, function(err) {
-            if (err) {
-                reject(new Error("Unable to parse file: " + err));
-            } else {
-                resolve();
-            }
-        });
-    });
+    const parseAsync = require('util').promisify(this.parseOldFormatDocument.bind(this));
+    try {
+        await parseAsync(filePath);
+    } catch (err) {
+        throw new Error("Unable to parse file: " + err);
+    }
 }

@@ -41,12 +41,8 @@ module.exports = function () {
                     (async function() {
                         try {
                             const pdfBuffer = await browserWindow.webContents.printToPDF(options);
-                            await new Promise((resolve, reject) => {
-                                fs.writeFile(data.targetFilePath, pdfBuffer, (error) => {
-                                    if (error) reject(error);
-                                    else resolve();
-                                });
-                            });
+                            const writeFileAsync = require('util').promisify(fs.writeFile);
+                            await writeFileAsync(data.targetFilePath, pdfBuffer);
                             global.mainWindow.webContents.send(data.id, {success: true});
                         } catch (error) {
                             global.mainWindow.webContents.send(data.id, {success: false, message: error.message});

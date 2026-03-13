@@ -588,30 +588,31 @@ function run(task, message, indicator) {
 }
 
 widget.reloadDesktopFont = async function() {
-    const config = await new Promise(function(resolve) {
+    const getConfigAsync = require('util').promisify((cb) => {
         require("./desktop").getDesktopFontConfig(function(config) {
-            resolve(config);
+            cb(null, config);
         });
     });
+    const config = await getConfigAsync();
 
     if (config.font) document.body.style.font = config.font;
     if (config.family) document.body.style.fontFamily = config.family;
     if (config.style) document.body.style.fontStyle = config.style;
     if (config.weight) document.body.style.fontWeight = config.weight;
     if (config.size) {
-        var scale = Config.get("view.uiTextScale", 100) / 100;
-        var size = config.size;
+        const scale = Config.get("view.uiTextScale", 100) / 100;
+        let size = config.size;
         if (config.size.match(/^([0-9\.]+)([pxt]+)$/)) {
             size = (parseFloat(RegExp.$1) * scale) + RegExp.$2;
         }
         document.body.style.fontSize = size;
     }
 
-    var family = Config.get(Config.UI_CUSTOM_FONT_FAMILY);
+    const family = Config.get(Config.UI_CUSTOM_FONT_FAMILY);
     if (family) document.body.style.fontFamily = family;
 
-    var size = Config.get(Config.UI_CUSTOM_FONT_SIZE);
-    if (size) document.body.style.fontSize = size;
+    const customFontSize = Config.get(Config.UI_CUSTOM_FONT_SIZE);
+    if (customFontSize) document.body.style.fontSize = customFontSize;
 
     return config;
 };
