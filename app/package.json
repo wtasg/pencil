@@ -49,11 +49,12 @@
     "start:dev": "./node_modules/.bin/electron . --enable-dev --enable-transparent-visuals",
     "start:mac": "./node_modules/.bin/electron . --enable-dev",
     "clean": "rm -rf dist",
-    "pack": "./node_modules/.bin/build",
-    "dist": "./node_modules/.bin/build",
-    "release": "./node_modules/.bin/build",
-    "dist:linux": "./node_modules/.bin/build --linux --ia32 --x64",
-    "dist:win32": "./node_modules/.bin/build --windows --ia32 --x64",
-    "dist:osx": "./node_modules/.bin/build --macos"
+    "build": "./node_modules/.bin/electron-builder",
+    "pack": "./node_modules/.bin/electron-builder",
+    "dist": "./node_modules/.bin/electron-builder",
+    "release": "./node_modules/.bin/electron-builder",
+    "dist:linux": "./node_modules/.bin/electron-builder --linux --ia32 --x64",
+    "dist:win32": "./node_modules/.bin/electron-builder --windows --ia32 --x64",
+    "dist:osx": "./node_modules/.bin/electron-builder --macos"
   }
 }
