@@ -6,7 +6,7 @@ const sharp = require('sharp');
 const jimp = {
     AUTO: 'auto',
     RESIZE_BICUBIC: true,
-    
+
     read: function(src, callback) {
         sharp(src)
             .raw()
@@ -32,7 +32,7 @@ class JimpImage {
         };
         this.quality = 100;
         this.rgba = true;
-        
+
         // Fill with color if provided
         if (color !== undefined) {
             const r = (color >> 24) & 0xff;
@@ -47,13 +47,11 @@ class JimpImage {
             }
         }
     }
-    
+
     getBuffer(mimeType, callback) {
-        const format = mimeType === 'auto' || mimeType === jimp.AUTO ? 'png' : 
+        const format = mimeType === 'auto' || mimeType === jimp.AUTO ? 'png' :
                       mimeType.replace('image/', '');
-        const ext = format === 'jpeg' ? 'jpg' : format;
-        const mime = `image/${format}`;
-        
+
         sharp(this.bitmap.data, {
             raw: {
                 width: this.bitmap.width,
@@ -66,11 +64,11 @@ class JimpImage {
         .then(buffer => callback(null, buffer))
         .catch(err => callback(err));
     }
-    
+
     getBase64(mimeType, callback) {
-        const format = mimeType === 'auto' || mimeType === jimp.AUTO ? 'png' : 
+        const format = mimeType === 'auto' || mimeType === jimp.AUTO ? 'png' :
                       mimeType.replace('image/', '');
-        
+
         sharp(this.bitmap.data, {
             raw: {
                 width: this.bitmap.width,
@@ -86,18 +84,17 @@ class JimpImage {
         })
         .catch(err => callback(err));
     }
-    
+
     getMIME() {
         return 'image/png';
     }
-    
+
     rotate(degree, resize, callback) {
         if (typeof resize === 'function') {
             callback = resize;
             resize = false;
         }
-        
-        const that = this;
+
         sharp(this.bitmap.data, {
             raw: {
                 width: this.bitmap.width,
@@ -117,15 +114,15 @@ class JimpImage {
         .catch(err => {
             if (callback) callback(err);
         });
-        
+
         return this;
     }
-    
+
     quality(q) {
         this.quality = q;
         return this;
     }
-    
+
     rgba(enable) {
         this.rgba = enable;
         return this;

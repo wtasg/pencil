@@ -349,7 +349,7 @@ CollectionManager.extractCollection = function(file, callback) {
         var admZip = require('adm-zip');
 
         var zip = new admZip(filePath);
-        
+
         try {
             const extract = require('util').promisify(zip.extractAllToAsync.bind(zip));
             await extract(targetDir, true);
@@ -558,7 +558,7 @@ CollectionManager.getLastUsedCollection = function () {
 };
 
 CollectionManager.removeCollectionDir = function (targetDir, onRemoved) {
-    rimraf(targetDir, {}, function(err) {
+    require("node:fs").rm(targetDir, { recursive: true, force: true }, function(err) {
         if (onRemoved) {
             onRemoved(err);
         }

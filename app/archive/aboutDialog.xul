@@ -30,61 +30,6 @@
                 </hbox>
             </vbox>
         </hbox>
-        <hbox>
-            <vbox flex="1">
-                <tabbox id="aboutBox">
-                    <tabs id="aboutBoxTabs">
-                        <tab label="&tab.credits.label;"/>
-                        <tab label="&tab.license.label;"/>
-                    </tabs>
-                    <tabpanels flex="1" id="aboutBoxTabPanels">
-                        <tabpanel>
-                            <vbox flex="1">
-                                <vbox flex="1">
-                                    <label style="font-weight: bold;">&tab.authors.label;</label>
-                                    <description>
-                                        Dương Thành An
-                                        <html:br/>
-                                        Nguyễn Tiến Dũng
-                                        <html:br/>
-                                        Nguyễn Nữ Hải Anh
-                                    </description>
-
-                                    <label style="font-weight: bold;padding-top: 20px;">&tab.contributors.label;</label>
-                                    <description>
-                                        Maxime Delorme
-                                        <html:br/>
-                                        Frederic Vandaele
-                                        <html:br/>
-                                        Brainiac Kalel
-                                        <html:br/>
-                                        Trương Xuân Tính
-                                        <html:br/>
-                                        Trương Anh Tuấn
-                                        <html:br/>
-                                        Phạm Thế Vinh
-                                        <html:br/>
-                                        Nguyễn Hồng Thái
-                                    </description>
-                                </vbox>
-                                <separator />
-                                <hbox style="padding-top: 20px;">
-                                    <vbox flex="1" >
-                                        <label width="250">&label.you.can.help.us.value;</label>
-                                    </vbox>
-                                    <vbox>
-                                        <image style="cursor:pointer;" src="chrome://pencil/skin/images/paypal.png" alt="&image.click.to.donate.alt;" tooltiptext="&image.you.can.help.us.tooltiptext;" onclick="Util.openDonate();" />
-                                    </vbox>
-                                </hbox>
-                            </vbox>
-                        </tabpanel>
-                        <tabpanel>
-                            <textbox id="licenseText" flex="1" multiline="true" readonly="true" rows="13" class="Readonly"/>
-                        </tabpanel>
-                    </tabpanels>
-                </tabbox>
-            </vbox>
-        </hbox>
     </vbox>
 
 </dialog>

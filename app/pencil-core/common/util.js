@@ -1618,21 +1618,6 @@ Util.compress = function (dir, zipFile, callback) {
     archive.directory(dir, "/", {});
     archive.finalize();
 };
-Util.writeDirToZip = function (dir, writer, prefix) {
-    var items = dir.directoryEntries;
-    while (items.hasMoreElements()) {
-        var file = items.getNext().QueryInterface(Components.interfaces.nsIFile);
-
-        var itemPath = prefix + file.leafName;
-
-        if (file.isDirectory()) {
-            writer.addEntryDirectory(itemPath, file.lastModifiedTime * 1000, false);
-            Util.writeDirToZip(file, writer, itemPath + "/");
-        } else {
-            writer.addEntryFile(itemPath, Components.interfaces.nsIZipWriter.COMPRESSION_DEFAULT, file, false);
-        }
-    }
-};
 Util.preloadFonts = function (doc) {
     var menupopup = document.createElementNS(PencilNamespaces.xul, "menupopup");
     var localFonts = Local.getInstalledFonts();

@@ -13,7 +13,7 @@ EpzHandler.prototype.loadDocument = async function(filePath) {
 
     const util = require('util');
     const extractAsync = util.promisify(zip.extractAllToAsync.bind(zip));
-    
+
     try {
         await extractAsync(Pencil.documentHandler.tempDir.name, true);
     } catch (err) {
@@ -25,34 +25,7 @@ EpzHandler.prototype.loadDocument = async function(filePath) {
             cb(err, result);
         });
     });
-    
+
     return await parseAsync(filePath);
 };
 
-/*
-EpzHandler.prototype.saveDocument = function (documentPath, callback) {
-    var thiz = this;
-
-    return new Promise(function (resolve, reject) {
-        var easyZip = require("easy-zip2").EasyZip;
-        var zip = new easyZip();
-        zip.zipFolder(Pencil.documentHandler.tempDir.name + "/.", function (err) {
-            if (err) {
-                reject(new Error("Unable to save file: " + err));
-            } else {
-                try {
-                    zip.writeToFile(documentPath, function (err) {
-                        if (err) {
-                            reject(new Error("Unable to save file: " + err));
-                        } else {
-                            resolve();
-                        }
-                    });
-                } catch (e) {
-                    reject(e);
-                }
-            }
-        });
-    });
-};
-*/
