@@ -1,5 +1,5 @@
-const { test } = require("@playwright/test");
-const { closePencil, launchPencil } = require("./helpers/pencil");
+import { test } from '@playwright/test';
+import { closePencil, launchPencil } from './helpers/pencil';
 
 test("launches Pencil main window", async () => {
     const { electronApp } = await launchPencil();

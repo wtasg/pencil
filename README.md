@@ -1,7 +1,6 @@
 # Pencil
 
-Setting up
-==========
+## Setting up
 
 ```bash
 git clone https://github.com/wtasg/pencil.git
@@ -10,8 +9,17 @@ npm install
 npm run start
 ```
 
-Testing
-=======
+## Development
+
+This project uses **TypeScript**. Available scripts:
+
+```bash
+npm run build      # TypeScript type checking
+npm run lint       # ESLint code quality checks
+npm run lint:fix   # Auto-fix linting issues
+```
+
+## Testing
 
 Unit tests:
 

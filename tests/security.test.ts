@@ -1,15 +1,15 @@
 // Test for shell:true deprecation warning
 // This test verifies we don't use deprecated shell:true pattern
 
-const { exec, spawn } = require('child_process');
+import { exec, spawn } from 'child_process';
 
 describe('Child Process Security', () => {
-    
+
     test('no shell:true in our code', () => {
         // This test serves as documentation
         // We should avoid: spawn(cmd, args, { shell: true })
         // Instead use: spawn(cmd, args) or execFile()
-        
+
         // Check that basic exec works without shell
         expect(true).toBe(true);
     });

@@ -1,15 +1,15 @@
 // Test Jimp (sharp-based) image processing module
 // This tests the jimp shim that uses sharp internally
 
-const path = require('path');
-const fs = require('fs');
-const os = require('os');
+import path from 'path';
+import fs from 'fs';
+import os from 'os';
 
 // Use the shim that uses sharp
-const jimp = require('../app/lib/jimp-shim');
+import jimp from '../app/lib/jimp-shim';
 
 describe('Jimp Image Processing (Sharp backend)', () => {
-    
+
     test('jimp can be required', () => {
         expect(jimp).toBeDefined();
         expect(typeof jimp.read).toBe('function');
@@ -28,7 +28,7 @@ describe('Jimp Image Processing (Sharp backend)', () => {
             0xE7, 0x00, 0x00, 0x00, 0x00, 0x49, 0x45, 0x4E,
             0x44, 0xAE, 0x42, 0x60, 0x82
         ]);
-        
+
         jimp.read(buffer, function (err, image) {
             expect(err).toBeNull();
             expect(image.bitmap.width).toBe(1);
@@ -39,7 +39,7 @@ describe('Jimp Image Processing (Sharp backend)', () => {
 
     test('can get buffer', (done) => {
         const tmpFile = path.join(os.tmpdir(), 'test_jimp_' + Date.now() + '.png');
-        
+
         // First create a temp image using sharp directly
         const sharp = require('sharp');
         sharp({
@@ -50,25 +50,25 @@ describe('Jimp Image Processing (Sharp backend)', () => {
                 background: { r: 255, g: 0, b: 0, alpha: 1 }
             }
         })
-        .png()
-        .toFile(tmpFile)
-        .then(() => {
-            jimp.read(tmpFile, function (err, image) {
-                image.getBuffer(jimp.AUTO, function (err, buffer) {
-                    expect(err).toBeNull();
-                    expect(buffer).toBeDefined();
-                    expect(buffer.length).toBeGreaterThan(0);
-                    fs.unlinkSync(tmpFile);
-                    done();
+            .png()
+            .toFile(tmpFile)
+            .then(() => {
+                jimp.read(tmpFile, function (err, image) {
+                    image.getBuffer(jimp.AUTO, function (err, buffer) {
+                        expect(err).toBeNull();
+                        expect(buffer).toBeDefined();
+                        expect(buffer.length).toBeGreaterThan(0);
+                        fs.unlinkSync(tmpFile);
+                        done();
+                    });
                 });
-            });
-        })
-        .catch(done);
+            })
+            .catch(done);
     }, 10000);
 
     test('can get base64', (done) => {
         const tmpFile = path.join(os.tmpdir(), 'test_jimp_' + Date.now() + '.png');
-        
+
         const sharp = require('sharp');
         sharp({
             create: {
@@ -78,24 +78,24 @@ describe('Jimp Image Processing (Sharp backend)', () => {
                 background: { r: 255, g: 0, b: 0, alpha: 1 }
             }
         })
-        .png()
-        .toFile(tmpFile)
-        .then(() => {
-            jimp.read(tmpFile, function (err, image) {
-                image.getBase64(jimp.AUTO, function (err, base64) {
-                    expect(err).toBeNull();
-                    expect(base64).toMatch(/^data:image\/png;base64,/);
-                    fs.unlinkSync(tmpFile);
-                    done();
+            .png()
+            .toFile(tmpFile)
+            .then(() => {
+                jimp.read(tmpFile, function (err, image) {
+                    image.getBase64(jimp.AUTO, function (err, base64) {
+                        expect(err).toBeNull();
+                        expect(base64).toMatch(/^data:image\/png;base64,/);
+                        fs.unlinkSync(tmpFile);
+                        done();
+                    });
                 });
-            });
-        })
-        .catch(done);
+            })
+            .catch(done);
     }, 10000);
 
     test('can rotate image', (done) => {
         const tmpFile = path.join(os.tmpdir(), 'test_jimp_' + Date.now() + '.png');
-        
+
         const sharp = require('sharp');
         sharp({
             create: {
@@ -105,19 +105,19 @@ describe('Jimp Image Processing (Sharp backend)', () => {
                 background: { r: 255, g: 0, b: 0, alpha: 1 }
             }
         })
-        .png()
-        .toFile(tmpFile)
-        .then(() => {
-            jimp.read(tmpFile, function (err, image) {
-                image.rotate(90, false, function (err, rotated) {
-                    expect(err).toBeNull();
-                    expect(rotated.bitmap.width).toBe(20);
-                    expect(rotated.bitmap.height).toBe(10);
-                    fs.unlinkSync(tmpFile);
-                    done();
+            .png()
+            .toFile(tmpFile)
+            .then(() => {
+                jimp.read(tmpFile, function (err, image) {
+                    image.rotate(90, false, function (err, rotated) {
+                        expect(err).toBeNull();
+                        expect(rotated.bitmap.width).toBe(20);
+                        expect(rotated.bitmap.height).toBe(10);
+                        fs.unlinkSync(tmpFile);
+                        done();
+                    });
                 });
-            });
-        })
-        .catch(done);
+            })
+            .catch(done);
     }, 10000);
 });

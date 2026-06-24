@@ -172,7 +172,7 @@ InstallRemoteCollectionsDialog.downloadAndInstall = function (url, downloadTarge
 
                     this.downloaded = 0;
 
-                    this.foStream.init(this.file, 0x04 | 0x08 | 0x20, 0664, 0);
+                    this.foStream.init(this.file, 0x04 | 0x08 | 0x20,0o664, 0);
                 }
 
                 try {
@@ -254,7 +254,7 @@ InstallRemoteCollectionsDialog.downloadAndInstall = function (url, downloadTarge
 
     //var inputStream = Components.classes["@mozilla.org/network/file-input-stream;1"]
                         //.createInstance(Components.interfaces.nsIFileInputStream);
-    //inputStream.init(uploadFile, 0x04 | 0x08, 0644, 0x04); // file is an nsIFile instance
+    //inputStream.init(uploadFile, 0x04 | 0x08,0o644, 0x04); // file is an nsIFile instance
 
     //var uploadChannel = channel.QueryInterface(Components.interfaces.nsIUploadChannel);
     var mime = "application/octet-stream";

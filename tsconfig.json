@@ -1,0 +1,53 @@
+{
+    "compilerOptions": {
+        "target": "ES2020",
+        "module": "commonjs",
+        "lib": [
+            "ES2020",
+            "DOM"
+        ],
+        "outDir": "./dist",
+        "rootDir": "./",
+        "strict": false,
+        "esModuleInterop": true,
+        "skipLibCheck": true,
+        "forceConsistentCasingInFileNames": false,
+        "resolveJsonModule": true,
+        "declaration": false,
+        "sourceMap": false,
+        "moduleResolution": "bundler",
+        "allowSyntheticDefaultImports": true,
+        "allowJs": true,
+        "checkJs": false,
+        "types": [
+            "node",
+            "jest"
+        ],
+        "noImplicitAny": false,
+        "noImplicitThis": false,
+        "noImplicitReturns": false,
+        "noUnusedLocals": false,
+        "noUnusedParameters": false,
+        "isolatedModules": true
+    },
+    "compileOnSave": false,
+    "include": [
+        "app/**/*.ts",
+        "tests/**/*.ts",
+        "e2e/**/*.ts",
+        "app/index.js"
+    ],
+    "exclude": [
+        "node_modules",
+        "dist",
+        "app/vendor",
+        "app/lib/codemirror",
+        "app/archive"
+    ],
+    "ts-node": {
+        "transpileOnly": true,
+        "compilerOptions": {
+            "module": "commonjs"
+        }
+    }
+}

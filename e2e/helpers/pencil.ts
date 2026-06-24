@@ -1,8 +1,8 @@
-const fs = require("fs");
-const os = require("os");
-const path = require("path");
-const { expect } = require("@playwright/test");
-const { _electron: electron } = require("playwright");
+import fs from 'fs';
+import os from 'os';
+import path from 'path';
+import { expect } from '@playwright/test';
+import { _electron as electron } from 'playwright';
 
 async function launchPencil() {
     const repoRoot = path.resolve(__dirname, "..", "..");
@@ -125,16 +125,34 @@ async function getShapeBox(page, tag) {
 }
 
 async function stubDialogs(page, paths) {
-    await page.evaluate((paths) => {
-        var dialog = require("@electron/remote").dialog;
+    // Create the save directory if it doesn't exist
+    fs.mkdirSync(path.dirname(paths.savePath), { recursive: true });
 
-        dialog.showSaveDialog = async function () {
-            return { filePath: paths.savePath, canceled: false };
-        };
-        dialog.showOpenDialog = async function () {
-            return { filePaths: [paths.openPath || paths.savePath], canceled: false };
-        };
-    }, paths);
+    // Stub the dialog in the RENDERER process (where app.js runs)
+    // We need to do this AFTER Pencil loads so we can override the already-captured reference
+    await page.evaluate((paths) => {
+        // Access the dialog that was already captured by app.js
+        // Since it's a proxy from @electron/remote, we can override it
+        if (typeof window !== 'undefined' && window.Pencil && window.Pencil.documentHandler) {
+            // Override pickupTargetFileToSave to bypass the SAVE dialog entirely
+            const originalPickup = window.Pencil.documentHandler.pickupTargetFileToSave;
+            window.Pencil.documentHandler.pickupTargetFileToSave = function(callback) {
+                console.log("[TEST] Stubbing pickupTargetFileToSave, returning:", paths.savePath);
+                // Call the callback immediately with our test path
+                if (callback) {
+                    callback(paths.savePath);
+                }
+            };
+            
+            // Override openDocument to bypass the OPEN dialog entirely
+            const originalOpen = window.Pencil.documentHandler.openDocument;
+            window.Pencil.documentHandler.openDocument = function(callback) {
+                console.log("[TEST] Stubbing openDocument, using:", paths.openPath);
+                // Directly load the saved document
+                window.Pencil.documentHandler.loadDocument(paths.openPath, callback);
+            };
+        }
+    }, { savePath: paths.savePath, openPath: paths.openPath });
 }
 
 // Suppress all in-app Dialog modals (Dialog.confirm, Dialog.alert, Dialog.error).
@@ -143,18 +161,18 @@ async function stubDialogs(page, paths) {
 async function suppressAppDialogs(page) {
     await page.evaluate(() => {
         Dialog.alert = function (message, extra, onClose) {
-            if (onClose) try { onClose(); } catch (_) {}
+            if (onClose) try { onClose(); } catch (_) { }
         };
         Dialog.error = function (message, extra, onClose) {
-            if (onClose) try { onClose(); } catch (_) {}
+            if (onClose) try { onClose(); } catch (_) { }
         };
         // Signature: question, extra, posTitle, onPos, negTitle, onNeg, extraTitle, onExtra
         // We always prefer the last "discard/cancel" path so tests don't accidentally save state.
         Dialog.confirm = function (question, extra, posTitle, onPos, negTitle, onNeg, extraTitle, onExtra) {
             if (typeof onExtra === "function") {
-                try { onExtra(); } catch (_) {}
+                try { onExtra(); } catch (_) { }
             } else if (typeof onNeg === "function") {
-                try { onNeg(); } catch (_) {}
+                try { onNeg(); } catch (_) { }
             }
         };
     });

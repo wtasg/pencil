@@ -109,7 +109,7 @@ XMLDocumentPersister.save = function (doc, filePath) {
 
     var fos = Components.classes["@mozilla.org/network/file-output-stream;1"]
                              .createInstance(Components.interfaces.nsIFileOutputStream);
-    fos.init(file, 0x02 | 0x08 | 0x20, 0666, 0);
+    fos.init(file, 0x02 | 0x08 | 0x20,0o666, 0);
 
     //write the xml processing instruction
     var os = Components.classes["@mozilla.org/intl/converter-output-stream;1"]

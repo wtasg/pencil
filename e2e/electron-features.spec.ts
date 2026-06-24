@@ -1,5 +1,5 @@
-const fs = require("fs");
-const { test, expect } = require("@playwright/test");
+import fs from 'fs';
+import { test, expect } from '@playwright/test';
 const {
     closePencil,
     createNewDocument,
@@ -99,8 +99,8 @@ test("saves and reloads a document through Electron dialogs", async () => {
 
     try {
         await suppressAppDialogs(page);
-        await stubDialogs(page, { savePath, openPath: savePath });
         await createNewDocument(page);
+        await stubDialogs(page, { savePath, openPath: savePath });
         await insertTaggedShape(page, "saved-shape", { x: 180, y: 180 });
 
         await page.evaluate(() => UICommandManager.getCommand("saveDocumentCommand").run());

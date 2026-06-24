@@ -1,8 +1,8 @@
 // Guardrails for app/lib usage before cleanup/removal work.
 // These tests document which lib assets are runtime-critical vs compatibility-only.
 
-const fs = require('fs');
-const path = require('path');
+import fs from 'fs';
+import path from 'path';
 
 const REPO_ROOT = path.join(__dirname, '..');
 const APP_XHTML = path.join(REPO_ROOT, 'app', 'app.xhtml');
@@ -112,7 +112,7 @@ describe('app/lib runtime contract', () => {
     });
 
     test('live app source does not reference removed legacy files', () => {
-        const scanExts = ['.js', '.xhtml', '.html', '.xml', '.less', '.css'];
+        const scanExts = ['.js', '.ts', '.xhtml', '.html', '.xml', '.less', '.css'];
         const skipDirs = new Set(['node_modules', 'archive', 'dist']);
         const refs = [];
 

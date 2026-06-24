@@ -1,6 +1,8 @@
 // Tests for Phase 3: Editor/Canvas Layer Promise Patterns
 // Tests for controller.js, DocumentHandler.js, imageData.js, renderer.js
 
+import util from 'util';
+
 describe('Phase 3: Editor/Canvas Layer Promise Patterns', () => {
 
     describe('controller.js patterns', () => {
@@ -17,9 +19,8 @@ describe('Phase 3: Editor/Canvas Layer Promise Patterns', () => {
                 }
             };
 
-            const util = require('util');
             const rasterizeAsync = util.promisify((p, fp, z, db, opt, cb) => {
-                mockApplicationPane.rasterizer.rasterizePageToFile(p, fp, function(p2, error) {
+                mockApplicationPane.rasterizer.rasterizePageToFile(p, fp, function (p2, error) {
                     cb(error, p2);
                 }, z, db, opt);
             });
@@ -44,9 +45,8 @@ describe('Phase 3: Editor/Canvas Layer Promise Patterns', () => {
                 }
             };
 
-            const util = require('util');
             const rasterizeSelAsync = util.promisify((t, fp, z, opt, cb) => {
-                mockApplicationPane.rasterizer.rasterizeSelectionToFile(t, fp, function(p2, error) {
+                mockApplicationPane.rasterizer.rasterizeSelectionToFile(t, fp, function (p2, error) {
                     cb(error, p2);
                 }, z, opt);
             });
