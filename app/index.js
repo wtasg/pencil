@@ -17,7 +17,9 @@ app.commandLine.appendSwitch("allow-file-access-from-files", "1");
 app.commandLine.appendSwitch("allow-file-access", "1");
 app.commandLine.appendSwitch("disable-smooth-scrolling");
 app.commandLine.appendSwitch("disable-site-isolation-trials");
-app.commandLine.appendSwitch("disable-gpu");
+if (process.platform.toLocaleLowerCase() === "linux") {
+    app.commandLine.appendSwitch("disable-gpu");
+}
 
 const remoteMain = require("@electron/remote/main");
 remoteMain.initialize();
@@ -26,7 +28,7 @@ remoteMain.initialize();
 // TODO: implement a setting for this one and requires a restart after changing that value
 if (process.platform.trim().toLowerCase() == "linux") {
     var useHWAConfig = getAppConfig("core.useHardwareAcceleration");
-    console.log("useHWAConfig: ", useHWAConfig);
+    console.log("useHWAConfig: ", { useHWAConfig });
     if (process.argv.indexOf("--with-hwa") < 0 && !useHWAConfig) {
         console.log("**************** Hardware acceleration disabled for Linux.");
         app.disableHardwareAcceleration();
@@ -102,7 +104,7 @@ function createWindow() {
     });
 
     if (process.platform == 'darwin') {
-        var { MacOSToolbar } = require('./views/toolbars/MacOSToolbar.ts');
+        var { MacOSToolbar } = require('./views/toolbars/MacOSToolbar.js');
         MacOSToolbar.createMacOSToolbar();
     }
 
