@@ -1,8 +1,8 @@
 // Regression guard: verify known-unused packages and dead files stay removed.
 // These tests will immediately fail if someone re-adds a dead import or file.
 
-const fs = require('fs');
-const path = require('path');
+import fs from 'fs';
+import path from 'path';
 
 function scanDir(dir, extensions, skipDirs = ['node_modules', 'archive']) {
     const results = [];

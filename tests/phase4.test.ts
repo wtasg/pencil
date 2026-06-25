@@ -1,6 +1,8 @@
 // Tests for Phase 4: Utilities/External Layer Promise Patterns
 // Tests for FontLoader.js, FontLoaderUtil.js, webPrinter.js, etc.
 
+import util from 'util';
+
 describe('Phase 4: Utilities/External Layer Promise Patterns', () => {
 
     describe('FontLoaderUtil.js patterns', () => {
@@ -54,7 +56,6 @@ describe('Phase 4: Utilities/External Layer Promise Patterns', () => {
                 }
             };
 
-            const util = require('util');
             const writeFileAsync = util.promisify(mockFs.writeFile);
 
             // Test success
@@ -78,7 +79,7 @@ describe('Phase 4: Utilities/External Layer Promise Patterns', () => {
         test('async IIFE execution', async () => {
             let log = [];
 
-            const result = await (async function() {
+            const result = await (async function () {
                 log.push('start');
                 const delay = (ms) => new Promise(res => setTimeout(res, ms));
                 await delay(5);
@@ -107,7 +108,6 @@ describe('Phase 4: Utilities/External Layer Promise Patterns', () => {
                 }
             };
 
-            const util = require('util');
             const confirmAsync = util.promisify((title, cb) => {
                 Dialog.confirm(title, '', 'Yes', () => cb(null, true), 'No', () => cb(null, false));
             });

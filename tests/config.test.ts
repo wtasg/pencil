@@ -1,14 +1,14 @@
 // Test configuration module
 
-const path = require('path');
-const os = require('os');
-const fs = require('fs');
+import path from 'path';
+import os from 'os';
+import fs from 'fs';
 
 // Mock implementations for testing
 const mockFs = {
     existsSync: () => true,
-    mkdirSync: () => {},
-    writeFileSync: () => {},
+    mkdirSync: () => { },
+    writeFileSync: () => { },
     readFileSync: () => '{}'
 };
 
@@ -17,23 +17,23 @@ const Config = {
     DATA_DIR_NAME: ".pencil",
     CONFIG_FILE_NAME: "config.json",
 
-    getDataPath: function() {
+    getDataPath: function () {
         return path.join(os.homedir(), this.DATA_DIR_NAME);
     },
 
-    getDataFilePath: function(name) {
+    getDataFilePath: function (name) {
         return path.join(this.getDataPath(), name);
     },
 
-    set: function(name, value) {
+    set: function (name, value) {
         this.data[name] = value;
     },
 
-    get: function(name, defaultValue) {
+    get: function (name, defaultValue) {
         return typeof this.data[name] !== 'undefined' ? this.data[name] : defaultValue;
     },
 
-    define: function(name, defaultValue) {
+    define: function (name, defaultValue) {
         if (this.get(name, null) === null) {
             this.set(name, defaultValue);
         }
@@ -59,7 +59,7 @@ describe('Config', () => {
     test('define sets default value only once', () => {
         Config.define('newKey', 'defaultValue');
         expect(Config.get('newKey')).toBe('defaultValue');
-        
+
         Config.set('newKey', 'modifiedValue');
         Config.define('newKey', 'defaultValue');
         expect(Config.get('newKey')).toBe('modifiedValue');

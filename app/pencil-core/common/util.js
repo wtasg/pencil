@@ -6,14 +6,14 @@ const remote = require('@electron/remote');
 const IS_MAC = process && /^darwin/.test(process.platform);
 const IS_WIN32 = process && /^win/.test(process.platform);
 
-const PR_RDONLY      = 0x01;
-const PR_WRONLY      = 0x02;
-const PR_RDWR        = 0x04;
+const PR_RDONLY = 0x01;
+const PR_WRONLY = 0x02;
+const PR_RDWR = 0x04;
 const PR_CREATE_FILE = 0x08;
-const PR_APPEND      = 0x10;
-const PR_TRUNCATE    = 0x20;
-const PR_SYNC        = 0x40;
-const PR_EXCL        = 0x80;
+const PR_APPEND = 0x10;
+const PR_TRUNCATE = 0x20;
+const PR_SYNC = 0x40;
+const PR_EXCL = 0x80;
 
 const DOM_VK_CANCEL = 3
 const DOM_VK_HELP = 6
@@ -167,7 +167,7 @@ Object.defineProperty(Event.prototype, "originalTarget", {
      * @param {HTMLElement|HTMLElement[]} elements
      * @param {Function}                  callback
      */
-    function forEachElement(elements, callback){
+    function forEachElement(elements, callback) {
         var elementsType = Object.prototype.toString.call(elements);
         var isCollectionTyped = ('[object Array]' === elementsType
             || ('[object NodeList]' === elementsType)
@@ -194,33 +194,33 @@ Object.defineProperty(Event.prototype, "originalTarget", {
      *
      * @constructor
      */
-    var ResizeSensor = function(element, callback) {
+    var ResizeSensor = function (element, callback) {
         /**
          *
          * @constructor
          */
         function EventQueue() {
             var q = [];
-            this.add = function(ev) {
+            this.add = function (ev) {
                 q.push(ev);
             };
 
             var i, j;
-            this.call = function() {
+            this.call = function () {
                 for (i = 0, j = q.length; i < j; i++) {
                     q[i].call();
                 }
             };
 
-            this.remove = function(ev) {
+            this.remove = function (ev) {
                 var newQueue = [];
-                for(i = 0, j = q.length; i < j; i++) {
-                    if(q[i] !== ev) newQueue.push(q[i]);
+                for (i = 0, j = q.length; i < j; i++) {
+                    if (q[i] !== ev) newQueue.push(q[i]);
                 }
                 q = newQueue;
             }
 
-            this.length = function() {
+            this.length = function () {
                 return q.length;
             }
         }
@@ -263,10 +263,10 @@ Object.defineProperty(Event.prototype, "originalTarget", {
             element.resizeSensor.style.cssText = style;
             element.resizeSensor.innerHTML =
                 '<div class="resize-sensor-expand" style="' + style + '">' +
-                    '<div style="' + styleChild + '"></div>' +
+                '<div style="' + styleChild + '"></div>' +
                 '</div>' +
                 '<div class="resize-sensor-shrink" style="' + style + '">' +
-                    '<div style="' + styleChild + ' width: 200%; height: 200%"></div>' +
+                '<div style="' + styleChild + ' width: 200%; height: 200%"></div>' +
                 '</div>';
             element.appendChild(element.resizeSensor);
 
@@ -281,7 +281,7 @@ Object.defineProperty(Event.prototype, "originalTarget", {
             var lastWidth = element.offsetWidth;
             var lastHeight = element.offsetHeight;
 
-            var reset = function() {
+            var reset = function () {
                 expandChild.style.width = '100000px';
                 expandChild.style.height = '100000px';
 
@@ -294,7 +294,7 @@ Object.defineProperty(Event.prototype, "originalTarget", {
 
             reset();
 
-            var onResized = function() {
+            var onResized = function () {
                 rafId = 0;
 
                 if (!dirty) return;
@@ -307,7 +307,7 @@ Object.defineProperty(Event.prototype, "originalTarget", {
                 }
             };
 
-            var onScroll = function() {
+            var onScroll = function () {
                 newWidth = element.offsetWidth;
                 newHeight = element.offsetHeight;
                 dirty = newWidth != lastWidth || newHeight != lastHeight;
@@ -319,7 +319,7 @@ Object.defineProperty(Event.prototype, "originalTarget", {
                 reset();
             };
 
-            var addEvent = function(el, name, cb) {
+            var addEvent = function (el, name, cb) {
                 if (el.attachEvent) {
                     el.attachEvent('on' + name, cb);
                 } else {
@@ -331,20 +331,20 @@ Object.defineProperty(Event.prototype, "originalTarget", {
             addEvent(shrink, 'scroll', onScroll);
         }
 
-        forEachElement(element, function(elem){
+        forEachElement(element, function (elem) {
             attachResizeEvent(elem, callback);
         });
 
-        this.detach = function(ev) {
+        this.detach = function (ev) {
             ResizeSensor.detach(element, ev);
         };
     };
 
-    ResizeSensor.detach = function(element, ev) {
-        forEachElement(element, function(elem){
-            if(elem.resizedAttached && typeof ev == "function"){
+    ResizeSensor.detach = function (element, ev) {
+        forEachElement(element, function (elem) {
+            if (elem.resizedAttached && typeof ev == "function") {
                 elem.resizedAttached.remove(ev);
-                if(elem.resizedAttached.length()) return;
+                if (elem.resizedAttached.length()) return;
             }
             if (elem.resizeSensor) {
                 if (elem.contains(elem.resizeSensor)) {
@@ -360,69 +360,69 @@ Object.defineProperty(Event.prototype, "originalTarget", {
 
 }));
 
-(function(){
-  var attachEvent = document.attachEvent;
-  var isIE = navigator.userAgent.match(/Trident/);
-  var requestFrame = (function(){
-    var raf = window.requestAnimationFrame || window.mozRequestAnimationFrame || window.webkitRequestAnimationFrame ||
-        function(fn){ return window.setTimeout(fn, 20); };
-    return function(fn){ return raf(fn); };
-  })();
+(function () {
+    var attachEvent = document.attachEvent;
+    var isIE = navigator.userAgent.match(/Trident/);
+    var requestFrame = (function () {
+        var raf = window.requestAnimationFrame || window.mozRequestAnimationFrame || window.webkitRequestAnimationFrame ||
+            function (fn) { return window.setTimeout(fn, 20); };
+        return function (fn) { return raf(fn); };
+    })();
 
-  var cancelFrame = (function(){
-    var cancel = window.cancelAnimationFrame || window.mozCancelAnimationFrame || window.webkitCancelAnimationFrame ||
-           window.clearTimeout;
-    return function(id){ return cancel(id); };
-  })();
+    var cancelFrame = (function () {
+        var cancel = window.cancelAnimationFrame || window.mozCancelAnimationFrame || window.webkitCancelAnimationFrame ||
+            window.clearTimeout;
+        return function (id) { return cancel(id); };
+    })();
 
-  function resizeListener(e){
-    var win = e.target || e.srcElement;
-    if (win.__resizeRAF__) cancelFrame(win.__resizeRAF__);
-    win.__resizeRAF__ = requestFrame(function(){
-      var trigger = win.__resizeTrigger__;
-      trigger.__resizeListeners__.forEach(function(fn){
-        fn.call(trigger, e);
-      });
-    });
-  }
-
-  function objectLoad(e){
-    this.contentDocument.defaultView.__resizeTrigger__ = this.__resizeElement__;
-    this.contentDocument.defaultView.addEventListener('resize', resizeListener);
-  }
-
-  window.addResizeListener = function(element, fn){
-    if (!element.__resizeListeners__) {
-      element.__resizeListeners__ = [];
-      if (attachEvent) {
-        element.__resizeTrigger__ = element;
-        element.attachEvent('onresize', resizeListener);
-      }
-      else {
-        if (getComputedStyle(element).position == 'static') element.style.position = 'relative';
-        var obj = element.__resizeTrigger__ = document.createElement('object');
-        obj.setAttribute('style', 'display: block; position: absolute; top: 0; left: 0; height: 100%; width: 100%; overflow: hidden; pointer-events: none; z-index: -1;');
-        obj.__resizeElement__ = element;
-        obj.onload = objectLoad;
-        obj.type = 'text/html';
-        if (isIE) element.appendChild(obj);
-        obj.data = 'about:blank';
-        if (!isIE) element.appendChild(obj);
-      }
+    function resizeListener(e) {
+        var win = e.target || e.srcElement;
+        if (win.__resizeRAF__) cancelFrame(win.__resizeRAF__);
+        win.__resizeRAF__ = requestFrame(function () {
+            var trigger = win.__resizeTrigger__;
+            trigger.__resizeListeners__.forEach(function (fn) {
+                fn.call(trigger, e);
+            });
+        });
     }
-    element.__resizeListeners__.push(fn);
-  };
 
-  window.removeResizeListener = function(element, fn){
-    element.__resizeListeners__.splice(element.__resizeListeners__.indexOf(fn), 1);
-    if (!element.__resizeListeners__.length) {
-      if (attachEvent) element.detachEvent('onresize', resizeListener);
-      else {
-        element.__resizeTrigger__.contentDocument.defaultView.removeEventListener('resize', resizeListener);
-        element.__resizeTrigger__ = !element.removeChild(element.__resizeTrigger__);
-      }
+    function objectLoad(e) {
+        this.contentDocument.defaultView.__resizeTrigger__ = this.__resizeElement__;
+        this.contentDocument.defaultView.addEventListener('resize', resizeListener);
     }
-  }
+
+    window.addResizeListener = function (element, fn) {
+        if (!element.__resizeListeners__) {
+            element.__resizeListeners__ = [];
+            if (attachEvent) {
+                element.__resizeTrigger__ = element;
+                element.attachEvent('onresize', resizeListener);
+            }
+            else {
+                if (getComputedStyle(element).position == 'static') element.style.position = 'relative';
+                var obj = element.__resizeTrigger__ = document.createElement('object');
+                obj.setAttribute('style', 'display: block; position: absolute; top: 0; left: 0; height: 100%; width: 100%; overflow: hidden; pointer-events: none; z-index: -1;');
+                obj.__resizeElement__ = element;
+                obj.onload = objectLoad;
+                obj.type = 'text/html';
+                if (isIE) element.appendChild(obj);
+                obj.data = 'about:blank';
+                if (!isIE) element.appendChild(obj);
+            }
+        }
+        element.__resizeListeners__.push(fn);
+    };
+
+    window.removeResizeListener = function (element, fn) {
+        element.__resizeListeners__.splice(element.__resizeListeners__.indexOf(fn), 1);
+        if (!element.__resizeListeners__.length) {
+            if (attachEvent) element.detachEvent('onresize', resizeListener);
+            else {
+                element.__resizeTrigger__.contentDocument.defaultView.removeEventListener('resize', resizeListener);
+                element.__resizeTrigger__ = !element.removeChild(element.__resizeTrigger__);
+            }
+        }
+    }
 })();
 
 /* class */ var Dom = {};
@@ -430,7 +430,7 @@ Object.defineProperty(Event.prototype, "originalTarget", {
 /* static int */ Dom.workOn = function (xpath, node, worker) {
     var nodes = Dom.getList(xpath, node);
 
-    for (var i = 0; i < nodes.length; i ++) {
+    for (var i = 0; i < nodes.length; i++) {
         worker(nodes[i]);
     }
     return nodes.length;
@@ -474,7 +474,7 @@ var domParser = new DOMParser();
     return Dom.parseFile(absPath);
 };
 
-Dom.isElementExistedInDocument = function(element) {
+Dom.isElementExistedInDocument = function (element) {
     while (element) {
         if (element == document) {
             return true;
@@ -494,7 +494,7 @@ Dom.getEvent = function (e) {
     return e;
 };
 Dom.disableEvent = function (node, event) {
-    Dom.registerEvent(node, event, function(ev) {Dom.cancelEvent(ev);}, true );
+    Dom.registerEvent(node, event, function (ev) { Dom.cancelEvent(ev); }, true);
 };
 Dom.cancelEvent = function (e) {
     var event = Dom.getEvent(e);
@@ -594,7 +594,7 @@ Dom.findUpwardForData = function (node, dataName) {
 };
 Dom.findUpwardForNodeWithData = function (node, dataName) {
     var n = Dom.findUpward(node, function (x) {
-        return typeof(x[dataName]) != "undefined";
+        return typeof (x[dataName]) != "undefined";
     });
 
     return n;
@@ -621,13 +621,13 @@ DomTagNameEvaluator.prototype.eval = function (node) {
 };
 Dom.findParentWithClass = function (node, className) {
     return Dom.findUpward(node, function (node) {
-            var index = (" " + node.className + " ").indexOf(" " + className + " ") >= 0
-            if(index > 0) {
-                return true;
-            } else {
-                return false;
-            }
-        });
+        var index = (" " + node.className + " ").indexOf(" " + className + " ") >= 0
+        if (index > 0) {
+            return true;
+        } else {
+            return false;
+        }
+    });
 };
 Dom.findParentByTagName = function (node, tagName) {
     tagName = tagName.toUpperCase();
@@ -688,7 +688,7 @@ Dom.findTop = function (node, evaluator) {
         Dom.doUpward(node, evaluator, function (node) {
             top = node;
         });
-    } catch (e) {}
+    } catch (e) { }
 
     return top;
 };
@@ -715,7 +715,7 @@ Dom.serializer = new XMLSerializer();
 Dom.parseToNode = function (xml, dom) {
     var doc = Dom.parser.parseFromString(xml, "text/xml");
     if (!doc || !doc.documentElement
-            || doc.documentElement.namespaceURI == "http://www.mozilla.org/newlayout/xml/parsererror.xml") {
+        || doc.documentElement.namespaceURI == "http://www.mozilla.org/newlayout/xml/parsererror.xml") {
         return null;
     }
     var node = doc.documentElement;
@@ -783,12 +783,12 @@ Dom.toXhtml = function (html) {
     Dom._dummyDiv.style.display = "block";
     var xhtml = Dom.serializeNode(Dom._dummyDiv);
     Dom._dummyDiv.style.display = "none";
-//    xhtml = xhtml.replace(/(<[^>]+) xmlns=""([^>]*>)/g, function (zero, one, two) {
-//        return one + two;
-//    });
-//    xhtml = xhtml.replace(/<[\/A-Z0-9]+[ \t\r\n>]/g, function (zero) {
-//        return zero.toLowerCase();
-//    });
+    //    xhtml = xhtml.replace(/(<[^>]+) xmlns=""([^>]*>)/g, function (zero, one, two) {
+    //        return one + two;
+    //    });
+    //    xhtml = xhtml.replace(/<[\/A-Z0-9]+[ \t\r\n>]/g, function (zero) {
+    //        return zero.toLowerCase();
+    //    });
     return xhtml;
 };
 Dom.htmlEncode = function (text) {
@@ -812,7 +812,7 @@ Dom.attrEncode = function (s, preserveCR) {
         */
         .replace(/\r\n/g, preserveCR) /* Must be before the next replacement. */
         .replace(/[\r\n]/g, preserveCR);
-        ;
+    ;
 };
 Dom.htmlStrip = function (s) {
     if (!Dom.htmlEncodePlaceHolder) {
@@ -826,7 +826,7 @@ Dom.htmlStrip = function (s) {
 
 Dom.getInnerText = function (node) {
     return node.innerText || node.textContent
-            || ((node.firstChild && node.firstChild.value) ? node.firstChild.value : "");
+        || ((node.firstChild && node.firstChild.value) ? node.firstChild.value : "");
 };
 
 Dom.setInnerText = function (element, text) {
@@ -882,8 +882,8 @@ Dom.resolveIdRef = function (shape, seed) {
     });
 };
 
-Dom.handleAttributeChange = function(node, attributeName, handler) {
-    node.addEventListener("DOMAttrModified", function(event) {
+Dom.handleAttributeChange = function (node, attributeName, handler) {
+    node.addEventListener("DOMAttrModified", function (event) {
         if (event.attrName == attributeName) {
             handler(event.prevValue, event.newValue);
         }
@@ -982,7 +982,7 @@ Dom.newDOMFragment = function (specs, doc, holder) {
 };
 Dom.populate = function (container, ids, doc) {
     var dom = doc ? doc : document;
-    for (var i = 0; i < ids.length; i ++) {
+    for (var i = 0; i < ids.length; i++) {
         var id = ids[i];
         container[id] = dom.getElementById(id);
     }
@@ -1051,7 +1051,7 @@ Svg.rotateMatrix = function (angle, center, element) {
 
     return matrix;
 };
-Svg.getScreenLocation = function(element, point) {
+Svg.getScreenLocation = function (element, point) {
     var sctm = element.getScreenCTM().inverse();
     return Svg.vectorInCTM(point ? point : new Point(0, 0), sctm);
 };
@@ -1073,18 +1073,18 @@ Svg.ensureRectContains = function (rect, point) {
     rect.bottom = Math.max(rect.bottom, point.y);
 };
 Svg.getBoundRectInCTM = function (box, ctm) {
-    var p = Svg.vectorInCTM({x: box.x, y: box.y}, ctm);
+    var p = Svg.vectorInCTM({ x: box.x, y: box.y }, ctm);
 
-    var rect = {left: p.x, right: p.x, top: p.y, bottom: p.y};
+    var rect = { left: p.x, right: p.x, top: p.y, bottom: p.y };
 
 
-    p = Svg.vectorInCTM({x: box.x + box.width, y: box.y}, ctm);
+    p = Svg.vectorInCTM({ x: box.x + box.width, y: box.y }, ctm);
     Svg.ensureRectContains(rect, p);
 
-    p = Svg.vectorInCTM({x: box.x, y: box.y + box.height}, ctm);
+    p = Svg.vectorInCTM({ x: box.x, y: box.y + box.height }, ctm);
     Svg.ensureRectContains(rect, p);
 
-    p = Svg.vectorInCTM({x: box.x + box.width, y: box.y + box.height}, ctm);
+    p = Svg.vectorInCTM({ x: box.x + box.width, y: box.y + box.height }, ctm);
     Svg.ensureRectContains(rect, p);
 
     return rect;
@@ -1096,10 +1096,12 @@ Svg.joinRect = function (rect1, rect2) {
     var maxX = Math.max(rect1.x + rect1.width, rect2.x + rect2.width);
     var maxY = Math.max(rect1.y + rect1.height, rect2.y + rect2.height);
 
-    return {x: minX,
-            y: minY,
-            width: maxX - minX,
-            height: maxY - minY};
+    return {
+        x: minX,
+        y: minY,
+        width: maxX - minX,
+        height: maxY - minY
+    };
 };
 Svg.expandRectTo = function (rect, p) {
     if (p.x < rect.x) {
@@ -1118,13 +1120,13 @@ Svg.expandRectTo = function (rect, p) {
 };
 Svg.contains = function (x, y, large) {
     return (large.x <= x && x <= large.x + large.width) &&
-            (large.y <= y && y <= large.y + large.height);
+        (large.y <= y && y <= large.y + large.height);
 };
 Svg.isInside = function (small, large) {
     return Svg.contains(small.x, small.y, large) && Svg.contains(small.x + small.width, small.y + small.height, large);
 };
 
-Svg.optimizeSpeed = function(target, on) {
+Svg.optimizeSpeed = function (target, on) {
     return;
     if (on) {
         target.setAttributeNS(PencilNamespaces.p, "p:moving", true);
@@ -1171,7 +1173,7 @@ Svg.getSymbolName = function (node) {
     }
 };
 Svg.setSymbolName = function (node, name) {
-    if (typeof(name) === "undefined" || name === null) {
+    if (typeof (name) === "undefined" || name === null) {
         node.remoteAttributeNS(PencilNamespaces.p, Svg.SYMBOL_NAME_ATTR);
     } else {
         return node.setAttributeNS(PencilNamespaces.p, Svg.SYMBOL_NAME_ATTR, name);
@@ -1195,7 +1197,7 @@ Local.getInstalledFonts = function () {
             installedFaces.push(font.name);
             var weights = [];
             for (var v of font.variants) if (weights.indexOf(v.weight) < 0) weights.push(v.weight);
-            localFonts.push({family: font.name, type: font._type, weights: weights});
+            localFonts.push({ family: font.name, type: font._type, weights: weights });
         }
     }
 
@@ -1205,12 +1207,12 @@ Local.getInstalledFonts = function () {
 
     return localFonts;
 };
-Local.sortFont = function(fonts) {
+Local.sortFont = function (fonts) {
     fonts.sort(function (a, b) {
         return a.family.localeCompare(b.family);
     });
 };
-Local.chromeToPath = function(aPath) {
+Local.chromeToPath = function (aPath) {
     if (!aPath || !(/^chrome:/.test(aPath))) {
         return; //not a chrome url
     }
@@ -1224,14 +1226,14 @@ Local.chromeToPath = function(aPath) {
     if (/^file:/.test(rv)) {
         rv = this.urlToPath(rv);
     } else {
-        rv = this.urlToPath("file://"+rv);
+        rv = this.urlToPath("file://" + rv);
     }
     return rv;
 };
 
-Local.urlToPath = function(aPath) {
+Local.urlToPath = function (aPath) {
     if (!aPath || !/^file:/.test(aPath)) {
-        return ;
+        return;
     }
 
     var rv;
@@ -1241,9 +1243,9 @@ Local.urlToPath = function(aPath) {
     return rv;
 };
 
-Local.copyToChrome = function(src, dest) {
+Local.copyToChrome = function (src, dest) {
     var ios = Components.classes["@mozilla.org/network/io-service;1"].
-              getService(Components.interfaces.nsIIOService);
+        getService(Components.interfaces.nsIIOService);
     var url = ios.newURI(src, null, null);
 
     if (!url || !url.schemeIs("file")) throw "Expected a file URL.";
@@ -1251,24 +1253,24 @@ Local.copyToChrome = function(src, dest) {
     var pngFile = url.QueryInterface(Components.interfaces.nsIFileURL).file;
 
     var istream = Components.classes["@mozilla.org/network/file-input-stream;1"].
-                  createInstance(Components.interfaces.nsIFileInputStream);
+        createInstance(Components.interfaces.nsIFileInputStream);
     istream.init(pngFile, -1, -1, false);
 
     var bstream = Components.classes["@mozilla.org/binaryinputstream;1"].
-                  createInstance(Components.interfaces.nsIBinaryInputStream);
+        createInstance(Components.interfaces.nsIBinaryInputStream);
     bstream.setInputStream(istream);
 
     var bytes = bstream.readBytes(bstream.available());
 
     var aFile = Components.classes["@mozilla.org/file/local;1"].
-                createInstance(Components.interfaces.nsILocalFile);
+        createInstance(Components.interfaces.nsILocalFile);
 
     aFile.initWithPath(Local.chromeToPath(dest));
-    aFile.createUnique(Components.interfaces.nsIFile.NORMAL_FILE_TYPE, 0600);
+    aFile.createUnique(Components.interfaces.nsIFile.NORMAL_FILE_TYPE, 0o600);
 
     var stream = Components.classes["@mozilla.org/network/safe-file-output-stream;1"].
-                 createInstance(Components.interfaces.nsIFileOutputStream);
-    stream.init(aFile, 0x04 | 0x08 | 0x20, 0600, 0); // readwrite, create, truncate
+        createInstance(Components.interfaces.nsIFileOutputStream);
+    stream.init(aFile, 0x04 | 0x08 | 0x20, 0o600, 0); // readwrite, create, truncate
 
     stream.write(bytes, bytes.length);
     if (stream instanceof Components.interfaces.nsISafeOutputStream) {
@@ -1277,7 +1279,7 @@ Local.copyToChrome = function(src, dest) {
         stream.close();
     }
 };
-Local.installWebFont = function(name, url) {
+Local.installWebFont = function (name, url) {
     var filename = Util.newUUID() + ".woff";
     var index = url.lastIndexOf("/");
     if (index != -1) {
@@ -1307,7 +1309,7 @@ Local.isFontExisting = function (font) {
 
     return false;
 };
-Local.openExtenstionManager = function() {
+Local.openExtenstionManager = function () {
     const EMTYPE = "Extension:Manager";
     var wm = Components.classes['@mozilla.org/appshell/window-mediator;1'].getService(Components.interfaces.nsIWindowMediator);
     var theEM = wm.getMostRecentWindow(EMTYPE);
@@ -1320,10 +1322,10 @@ Local.openExtenstionManager = function() {
     window.openDialog(EMURL, "", EMFEATURES);
 };
 Local.newTempFile = function (prefix, ext) {
-    return tmp.fileSync({prefix: prefix + "-", postfix: "." + ext, keep: false});
+    return tmp.fileSync({ prefix: prefix + "-", postfix: "." + ext, keep: false });
 };
 Local.createTempDir = function (prefix) {
-    return tmp.dirSync({prefix: prefix + "-", keep: false});
+    return tmp.dirSync({ prefix: prefix + "-", keep: false });
 };
 
 var Console = {};
@@ -1347,8 +1349,8 @@ Console.alertError = function (exception, toConsole) {
 var Util = {};
 Util.uuidGenerator = {
     generateUUID: function () {
-        return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-            var r = crypto.getRandomValues(new Uint8Array(1))[0]%16|0, v = c == 'x' ? r : (r&0x3|0x8);
+        return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+            var r = crypto.getRandomValues(new Uint8Array(1))[0] % 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
             return v.toString(16);
         });
     }
@@ -1384,7 +1386,7 @@ Util.enumInterfaces = function (object) {
         try {
             var o = object.QueryInterface(iface);
             if (o) ifaces.push(iface);
-        } catch (e) {}
+        } catch (e) { }
     }
 
     return ifaces;
@@ -1399,26 +1401,26 @@ Util.getClipboardImage = function (clipData, length, handler) {
     var dataStream = clipData.QueryInterface(Components.interfaces.nsIInputStream);
 
     var bStream = Components.classes["@mozilla.org/binaryinputstream;1"]
-                            .createInstance(Components.interfaces.nsIBinaryInputStream);
+        .createInstance(Components.interfaces.nsIBinaryInputStream);
     bStream.setInputStream(dataStream);
     var bytes = bStream.readBytes(bStream.available());
 
     //create a temp file to save
     var file = Components.classes["@mozilla.org/file/directory_service;1"]
-                        .getService(Components.interfaces.nsIProperties)
-                        .get("TmpD", Components.interfaces.nsIFile);
+        .getService(Components.interfaces.nsIProperties)
+        .get("TmpD", Components.interfaces.nsIFile);
     file.append("pencil-clipboard-image.png");
 
     var fos = Components.classes["@mozilla.org/network/file-output-stream;1"]
-                            .createInstance(Components.interfaces.nsIFileOutputStream);
-    fos.init(file, 0x02 | 0x08 | 0x20, 0666, 0);
+        .createInstance(Components.interfaces.nsIFileOutputStream);
+    fos.init(file, 0x02 | 0x08 | 0x20, 0o666, 0);
 
     fos.write(bytes, bytes.length);
     fos.close();
 
     if (!Util.ios) {
         Util.ios = Components.classes["@mozilla.org/network/io-service;1"]
-                        .getService(Components.interfaces.nsIIOService);
+            .getService(Components.interfaces.nsIIOService);
 
     }
     var url = Util.ios.newFileURI(file).spec;
@@ -1431,7 +1433,7 @@ Util.getClipboardImage = function (clipData, length, handler) {
 };
 Util.statusbarDisplay = null;
 Util.STATUSBAR_MESSAGE_AUTOHIDE = 4000;
-Util.showStatusBarInfo = function(message, autoHide) {
+Util.showStatusBarInfo = function (message, autoHide) {
     if (!Util.statusbarDisplay) return;
     Util.statusbarDisplay.setAttribute("src", "chrome://pencil/skin/images/dialog-information.png");
     Util.statusbarDisplay.label = message;
@@ -1442,7 +1444,7 @@ Util.showStatusBarInfo = function(message, autoHide) {
         }, Util.STATUSBAR_MESSAGE_AUTOHIDE);
     }
 };
-Util.showStatusBarWarning = function(message, autoHide) {
+Util.showStatusBarWarning = function (message, autoHide) {
     if (!Util.statusbarDisplay) return;
     Util.statusbarDisplay.setAttribute("src", "chrome://pencil/skin/images/dialog-warning.png");
     Util.statusbarDisplay.label = message;
@@ -1453,7 +1455,7 @@ Util.showStatusBarWarning = function(message, autoHide) {
         }, Util.STATUSBAR_MESSAGE_AUTOHIDE);
     }
 };
-Util.showStatusBarError = function(message, autoHide) {
+Util.showStatusBarError = function (message, autoHide) {
     if (!Util.statusbarDisplay) return;
     Util.statusbarDisplay.setAttribute("src", "chrome://pencil/skin/images/dialog-error.png");
     Util.statusbarDisplay.label = message;
@@ -1474,53 +1476,61 @@ Util.setPointerPosition = function (x, y) {
     }
     Util.statusbarPointer.label = x + ", " + y;
 };
-Util.dialog = function(title, description, buttonLabel) {
-    var message = {type: "info",
-                    title: title,
-                    description: description ? description : null,
-                    acceptLabel: buttonLabel ? buttonLabel : null };
+Util.dialog = function (title, description, buttonLabel) {
+    var message = {
+        type: "info",
+        title: title,
+        description: description ? description : null,
+        acceptLabel: buttonLabel ? buttonLabel : null
+    };
 
     var returnValueHolder = {};
     var dialog = window.openDialog("chrome://pencil/content/messageDialog.xul", "pencilMessageDialog" + Util.getInstanceToken(), "modal,centerscreen", message, returnValueHolder);
 };
-Util.info = function(title, description, buttonLabel) {
+Util.info = function (title, description, buttonLabel) {
     Dialog.alert(title + "\n" + description);
 };
-Util.warn = function(title, description, buttonLabel) {
+Util.warn = function (title, description, buttonLabel) {
     Dialog.error(title + "\n" + description);
 };
-Util.error = function(title, description, buttonLabel) {
+Util.error = function (title, description, buttonLabel) {
     Dialog.error(title + "\n" + description);
 }
-Util.confirm = function(title, description, acceptLabel, cancelLabel) {
-    var message = {type: "confirm",
-                    title: title,
-                    description: description ? description : null,
-                    acceptLabel: acceptLabel ? acceptLabel : null,
-                    cancelLabel: cancelLabel ? cancelLabel : null };
+Util.confirm = function (title, description, acceptLabel, cancelLabel) {
+    var message = {
+        type: "confirm",
+        title: title,
+        description: description ? description : null,
+        acceptLabel: acceptLabel ? acceptLabel : null,
+        cancelLabel: cancelLabel ? cancelLabel : null
+    };
 
     var returnValueHolder = {};
     var dialog = window.openDialog("chrome://pencil/content/messageDialog.xul", "pencilMessageDialog" + Util.getInstanceToken(), "modal,centerscreen", message, returnValueHolder);
     return returnValueHolder.button == "accept";
 }
-Util.confirmWithWarning = function(title, description, acceptLabel, cancelLabel) {
-    var message = {type: "confirmWarned",
-                    title: title,
-                    description: description ? description : null,
-                    acceptLabel: acceptLabel ? acceptLabel : null,
-                    cancelLabel: cancelLabel ? cancelLabel : null };
+Util.confirmWithWarning = function (title, description, acceptLabel, cancelLabel) {
+    var message = {
+        type: "confirmWarned",
+        title: title,
+        description: description ? description : null,
+        acceptLabel: acceptLabel ? acceptLabel : null,
+        cancelLabel: cancelLabel ? cancelLabel : null
+    };
 
     var returnValueHolder = {};
     var dialog = window.openDialog("chrome://pencil/content/messageDialog.xul", "pencilMessageDialog" + Util.getInstanceToken(), "modal,centerscreen", message, returnValueHolder);
     return returnValueHolder.button == "accept";
 }
-Util.confirmExtra = function(title, description, acceptLabel, extraLabel, cancelLabel) {
-    var message = {type: "confirm2",
-                    title: title,
-                    description: description ? description : null,
-                    acceptLabel: acceptLabel ? acceptLabel : null,
-                    extraLabel: extraLabel ? extraLabel : null,
-                    cancelLabel: cancelLabel ? cancelLabel : null };
+Util.confirmExtra = function (title, description, acceptLabel, extraLabel, cancelLabel) {
+    var message = {
+        type: "confirm2",
+        title: title,
+        description: description ? description : null,
+        acceptLabel: acceptLabel ? acceptLabel : null,
+        extraLabel: extraLabel ? extraLabel : null,
+        cancelLabel: cancelLabel ? cancelLabel : null
+    };
 
     var returnValueHolder = {};
     var dialog = window.openDialog("chrome://pencil/content/messageDialog.xul", "pencilMessageDialog" + Util.getInstanceToken(), "modal,centerscreen", message, returnValueHolder);
@@ -1532,7 +1542,7 @@ Util.confirmExtra = function(title, description, acceptLabel, extraLabel, cancel
 
     return result;
 }
-Util.beginProgressJob = function(jobName, jobStarter) {
+Util.beginProgressJob = function (jobName, jobStarter) {
     new ProgressiveJobDialog().open({
         title: jobName,
         starter: jobStarter
@@ -1595,7 +1605,7 @@ Util.generateIcon = function (target, maxWidth, maxHeight, padding, iconPath, ca
         console.log("iconPath:", iconPath);
         console.log("rasterizer:", rasterizer);
         if (iconPath) {
-            rasterizer.rasterizeDOM(svg, iconPath, function () {});
+            rasterizer.rasterizeDOM(svg, iconPath, function () { });
         } else {
             rasterizer.rasterizeDOMToUrl(svg, function (data) {
                 if (callback) {
@@ -1665,18 +1675,18 @@ Util.getMessage = function (msg, args) {
     var text = MESSAGES[msg];
     if (!text) return msg;
 
-    if (typeof(args) == "undefined") return text;
+    if (typeof (args) == "undefined") return text;
     return text.replace(/%S/g, "" + args);
 };
 Util.showNotification = function (title, ms) {
     Components.classes['@mozilla.org/alerts-service;1'].
-              getService(Components.interfaces.nsIAlertsService).
-              showAlertNotification(null, title, ms, false, '', null);
+        getService(Components.interfaces.nsIAlertsService).
+        showAlertNotification(null, title, ms, false, '', null);
 };
-Util.isXulrunner = function() {
+Util.isXulrunner = function () {
     return navigator.userAgent.indexOf("Firefox") == -1;
 };
-Util.getXulrunnerVersion = function() {
+Util.getXulrunnerVersion = function () {
     var agent = navigator.userAgent;
     var version = agent.match(/rv:([^\s\)]*)/i);
     if (version && version.length > 1) {
@@ -1684,7 +1694,7 @@ Util.getXulrunnerVersion = function() {
     }
     return "0";
 };
-Util.isXul6OrLater = function() {
+Util.isXul6OrLater = function () {
     var version = Util.getXulrunnerVersion();
     var q = version.split("\.");
     if (q.length > 0) {
@@ -1692,7 +1702,7 @@ Util.isXul6OrLater = function() {
     }
     return false;
 };
-Util.isMac = function() {
+Util.isMac = function () {
     return navigator.userAgent.indexOf("Intel Mac") != -1;
 }
 Util.em = function () {
@@ -1720,11 +1730,11 @@ if (!window.dump) {
             console.log(obj);
         };
     } else {
-        window.dump = function () {};
+        window.dump = function () { };
     }
 }
 
-if (typeof(console) == "undefined") {
+if (typeof (console) == "undefined") {
     console = {
         debug: function (value) {
             dump("DEBUG: " + value + "\n");
@@ -1747,12 +1757,12 @@ function debug() {
     if (DEV_ENABLED) console.log.apply(console, ["DEBUG>"].concat(Array.prototype.slice.call(arguments)));
 }
 function stackTrace() {
-	//DEBUG_BEGIN
-	var lines = [];
-	for (var frame = Components.stack; frame; frame = frame.caller) {
-		lines.push(frame.name + " (" + frame.filename + "@" + frame.lineNumber + ")");
-	}
-	debug(lines.join("\n"));
+    //DEBUG_BEGIN
+    var lines = [];
+    for (var frame = Components.stack; frame; frame = frame.caller) {
+        lines.push(frame.name + " (" + frame.filename + "@" + frame.lineNumber + ")");
+    }
+    debug(lines.join("\n"));
     //DEBUG_END
 }
 function warn(value) {
@@ -1760,7 +1770,7 @@ function warn(value) {
     debug(value);
 }
 function info(value) {
-	//DEBUG_BEGIN
+    //DEBUG_BEGIN
     console.info(value);
     debug(value);
     //DEBUG_END
@@ -1771,7 +1781,7 @@ function error(value) {
 }
 var lastTick = (new Date()).getTime();
 function tick(value) {
-	//DEBUG_BEGIN
+    //DEBUG_BEGIN
     return;
     var date = new Date();
     var newTick = date.getTime();
@@ -1780,14 +1790,14 @@ function tick(value) {
 
     var prefix = value ? (value + ": ").toUpperCase() : "TICK: ";
     dump(prefix + date.getSeconds() + "." + date.getMilliseconds() + " (" + delta + " ms)\n");
-	//DEBUG_END
+    //DEBUG_END
 }
 
 var Net = {};
 Net.uploadAndDownload = function (url, uploadFile, downloadTargetFile, listener, options) {
 
     var ioService = Components.classes["@mozilla.org/network/io-service;1"]
-                                .getService(Components.interfaces.nsIIOService);
+        .getService(Components.interfaces.nsIIOService);
 
     var uri = ioService.newURI(url, null, null);
     var channel = ioService.newChannelFromURI(uri);
@@ -1815,12 +1825,12 @@ Net.uploadAndDownload = function (url, uploadFile, downloadTargetFile, listener,
             try {
                 if (!this.foStream) {
                     this.foStream = Components.classes["@mozilla.org/network/file-output-stream;1"]
-                                            .createInstance(Components.interfaces.nsIFileOutputStream);
+                        .createInstance(Components.interfaces.nsIFileOutputStream);
                     this.writeMessage("Start receiving file...");
 
                     this.downloaded = 0;
 
-                    this.foStream.init(this.file, 0x04 | 0x08 | 0x20, 0664, 0);
+                    this.foStream.init(this.file, 0x04 | 0x08 | 0x20, 0o664, 0);
                 }
 
                 try {
@@ -1828,7 +1838,7 @@ Net.uploadAndDownload = function (url, uploadFile, downloadTargetFile, listener,
                 } catch (e) { }
 
                 var bStream = Components.classes["@mozilla.org/binaryinputstream;1"].
-                                createInstance(Components.interfaces.nsIBinaryInputStream);
+                    createInstance(Components.interfaces.nsIBinaryInputStream);
 
                 bStream.setInputStream(stream);
                 var bytes = bStream.readBytes(length);
@@ -1862,13 +1872,13 @@ Net.uploadAndDownload = function (url, uploadFile, downloadTargetFile, listener,
                 throw Components.results.NS_NOINTERFACE;
             }
         },
-        onProgress : function (aRequest, aContext, aProgress, aProgressMax) { },
-        onStatus : function (aRequest, aContext, aStatus, aStatusArg) {
+        onProgress: function (aRequest, aContext, aProgress, aProgressMax) { },
+        onStatus: function (aRequest, aContext, aStatus, aStatusArg) {
             this.writeMessage("onStatus: " + [aRequest, aContext, aStatus, aStatusArg]);
         },
-        onRedirect : function (aOldChannel, aNewChannel) { },
+        onRedirect: function (aOldChannel, aNewChannel) { },
 
-        QueryInterface : function(aIID) {
+        QueryInterface: function (aIID) {
             if (aIID.equals(Components.interfaces.nsISupports) ||
                 aIID.equals(Components.interfaces.nsIInterfaceRequestor) ||
                 aIID.equals(Components.interfaces.nsIChannelEventSink) ||
@@ -1884,8 +1894,8 @@ Net.uploadAndDownload = function (url, uploadFile, downloadTargetFile, listener,
     }; //listener
 
     var inputStream = Components.classes["@mozilla.org/network/file-input-stream;1"]
-                        .createInstance(Components.interfaces.nsIFileInputStream);
-    inputStream.init(uploadFile, 0x04 | 0x08, 0644, 0x04); // file is an nsIFile instance
+        .createInstance(Components.interfaces.nsIFileInputStream);
+    inputStream.init(uploadFile, 0x04 | 0x08, 0o644, 0x04); // file is an nsIFile instance
 
     var uploadChannel = channel.QueryInterface(Components.interfaces.nsIUploadChannel);
     var mime = "application/octet-stream";
@@ -1908,7 +1918,7 @@ Net.uploadAndDownload = function (url, uploadFile, downloadTargetFile, listener,
 Net.submitMultiplart = function (url, parts, externalListener, options) {
 
     var ioService = Components.classes["@mozilla.org/network/io-service;1"]
-                                .getService(Components.interfaces.nsIIOService);
+        .getService(Components.interfaces.nsIIOService);
 
     var uri = ioService.newURI(url, null, null);
     var channel = ioService.newChannelFromURI(uri);
@@ -1945,13 +1955,13 @@ Net.submitMultiplart = function (url, parts, externalListener, options) {
                 throw Components.results.NS_NOINTERFACE;
             }
         },
-        onProgress : function (aRequest, aContext, aProgress, aProgressMax) { },
-        onStatus : function (aRequest, aContext, aStatus, aStatusArg) {
+        onProgress: function (aRequest, aContext, aProgress, aProgressMax) { },
+        onStatus: function (aRequest, aContext, aStatus, aStatusArg) {
             this.writeMessage("onStatus: " + [aRequest, aContext, aStatus, aStatusArg]);
         },
-        onRedirect : function (aOldChannel, aNewChannel) { },
+        onRedirect: function (aOldChannel, aNewChannel) { },
 
-        QueryInterface : function(aIID) {
+        QueryInterface: function (aIID) {
             if (aIID.equals(Components.interfaces.nsISupports) ||
                 aIID.equals(Components.interfaces.nsIInterfaceRequestor) ||
                 aIID.equals(Components.interfaces.nsIChannelEventSink) ||
@@ -1967,30 +1977,30 @@ Net.submitMultiplart = function (url, parts, externalListener, options) {
     }; //listener
 
     var stream = Components.classes["@mozilla.org/io/multiplex-input-stream;1"]
-                            .createInstance(Components.interfaces.nsIMultiplexInputStream)
-                            .QueryInterface(Components.interfaces.nsIInputStream);
+        .createInstance(Components.interfaces.nsIMultiplexInputStream)
+        .QueryInterface(Components.interfaces.nsIInputStream);
 
     var boundary = "--------PENCIL--" + new Date().getTime();
-    var boundaryStart = "\r\n--" + boundary + "\r\n" ;
-    var boundaryEnd = "\r\n--" + boundary + "--" ;
+    var boundaryStart = "\r\n--" + boundary + "\r\n";
+    var boundaryEnd = "\r\n--" + boundary + "--";
 
-    for (var i = 0; i < parts.length; i ++) {
+    for (var i = 0; i < parts.length; i++) {
         var part = parts[i];
         if (part.file) {
             //append the open boundary
             stream.appendStream(Net.createSimpleTextStream(boundaryStart));
 
             var inputStream = Components.classes["@mozilla.org/network/file-input-stream;1"]
-                                .createInstance(Components.interfaces.nsIFileInputStream);
-            inputStream.init(part.file, 0x04 | 0x08, 0644, 0x04); // file is an nsIFile instance
+                .createInstance(Components.interfaces.nsIFileInputStream);
+            inputStream.init(part.file, 0x04 | 0x08, 0o644, 0x04); // file is an nsIFile instance
 
             var bufferedInputStream = Components.classes["@mozilla.org/network/buffered-input-stream;1"]
-                                .createInstance(Components.interfaces.nsIBufferedInputStream);
+                .createInstance(Components.interfaces.nsIBufferedInputStream);
             bufferedInputStream.init(inputStream, 4096);
 
             //wrap the file stream into a MIME-input stream
             var mimeInputStream = Components.classes["@mozilla.org/network/mime-input-stream;1"]
-                                    .createInstance(Components.interfaces.nsIMIMEInputStream);
+                .createInstance(Components.interfaces.nsIMIMEInputStream);
 
             mimeInputStream.addHeader("Content-Type", "image/png");
             mimeInputStream.addHeader("Content-Disposition", "form-data; name=\"" + part.name + "\"; filename=\"" + part.file.leafName + "\"");
@@ -2003,7 +2013,7 @@ Net.submitMultiplart = function (url, parts, externalListener, options) {
             stream.appendStream(Net.createSimpleTextStream(boundaryStart));
 
             var mimeInputStream = Components.classes["@mozilla.org/network/mime-input-stream;1"]
-                                    .createInstance(Components.interfaces.nsIMIMEInputStream);
+                .createInstance(Components.interfaces.nsIMIMEInputStream);
 
             mimeInputStream.addContentLength = true;
             mimeInputStream.addHeader("Content-Type", "application/x-www-form-urlencoded");
@@ -2025,14 +2035,14 @@ Net.submitMultiplart = function (url, parts, externalListener, options) {
 
     if (options.auth) {
         var authenticator = Components.classes["@mozilla.org/network/http-authenticator;1?scheme=" + options.auth.scheme]
-                            .getService(Components.interfaces.nsIHttpAuthenticator);
+            .getService(Components.interfaces.nsIHttpAuthenticator);
 
         var credentials = authenticator.generateCredentials(httpChannel, "Basic realm=\"Bugzilla\"",
-                                                              false, uri.host,
-                                                              {value: options.auth.user},
-                                                              {value: options.auth.password},
-                                                              {},
-                                                              {});
+            false, uri.host,
+            { value: options.auth.user },
+            { value: options.auth.password },
+            {},
+            {});
         httpChannel.setRequestHeader("Authorization", credentials, true);
     }
 
@@ -2048,20 +2058,20 @@ Net.submitMultiplart = function (url, parts, externalListener, options) {
 };
 Net.createSimpleTextStream = function (text) {
     var stream = Components.classes['@mozilla.org/io/string-input-stream;1']
-                    .createInstance(Components.interfaces.nsIStringInputStream);
+        .createInstance(Components.interfaces.nsIStringInputStream);
     stream.setData(text, -1);
 
     return stream;
 };
-Net.downloadAsync = function(url, destPath, listener) {
+Net.downloadAsync = function (url, destPath, listener) {
     var persist = Components.classes["@mozilla.org/embedding/browser/nsWebBrowserPersist;1"]
-              .createInstance(Components.interfaces.nsIWebBrowserPersist);
+        .createInstance(Components.interfaces.nsIWebBrowserPersist);
     var file = Components.classes["@mozilla.org/file/local;1"]
-               .createInstance(Components.interfaces.nsILocalFile);
+        .createInstance(Components.interfaces.nsILocalFile);
     file.initWithPath(destPath); // download destination
     var obj_URI = Components.classes["@mozilla.org/network/io-service;1"]
-                  .getService(Components.interfaces.nsIIOService)
-                  .newURI(url, null, null);
+        .getService(Components.interfaces.nsIIOService)
+        .newURI(url, null, null);
 
     persist.progressListener = listener;
     /*{
@@ -2079,7 +2089,7 @@ Net.downloadAsync = function(url, destPath, listener) {
 Util.goDoCommand = function (command, doc) {
     var dom = doc ? doc : document;
     var controller = dom.commandDispatcher.getControllerForCommand(command);
-    if (controller && controller.isCommandEnabled(command)){
+    if (controller && controller.isCommandEnabled(command)) {
         controller.doCommand(command);
     }
 };
@@ -2093,20 +2103,20 @@ Util.getFileExtension = function (path) {
     return null;
 };
 Util.getCustomProperty = function (node, name, defaultValue) {
-	if (node.hasAttributeNS(PencilNamespaces.p, name)) {
-		return node.getAttributeNS(PencilNamespaces.p, name);
-	}
+    if (node.hasAttributeNS(PencilNamespaces.p, name)) {
+        return node.getAttributeNS(PencilNamespaces.p, name);
+    }
 
-	return defaultValue;
+    return defaultValue;
 };
 Util.getCustomNumberProperty = function (node, name, defaultValue) {
-	var v = Util.getCustomProperty(node, name, null);
-	if (v == null) return defaultValue;
+    var v = Util.getCustomProperty(node, name, null);
+    if (v == null) return defaultValue;
 
-	return parseFloat(v);
+    return parseFloat(v);
 };
 Util.setCustomProperty = function (node, name, value) {
-	node.setAttributeNS(PencilNamespaces.p, "p:" + name, value);
+    node.setAttributeNS(PencilNamespaces.p, "p:" + name, value);
 };
 Util.imageOnloadListener = function (event) {
     var image = event.target;
@@ -2115,7 +2125,7 @@ Util.imageOnloadListener = function (event) {
     var w = image.naturalWidth;
     var h = image.naturalHeight;
 
-    var r = (image._mode == "center-crop" ? Math.min(w/W, h/H) : Math.max(w/W, h/H));
+    var r = (image._mode == "center-crop" ? Math.min(w / W, h / H) : Math.max(w / W, h / H));
 
     if (!image._allowUpscale) r = Math.max(r, 1);
 
@@ -2155,7 +2165,7 @@ Util.setupImage = function (image, src, mode, allowUpscale) {
     image.parentNode.style.backgroundSize = (mode.indexOf("crop") >= 0) ? "cover" : "contain";
 };
 
-Util.isDev = function() {
+Util.isDev = function () {
     return process.defaultApp || /[\\/]electron-prebuilt[\\/]/.test(process.execPath) || /[\\/]electron[\\/]/.test(process.execPath);
 };
 
@@ -2172,7 +2182,7 @@ window.addEventListener("DOMContentLoaded", function () {
 
 var propertyTypeArray = ["Alignment", "Bool", "Bound", "Color", "CSS", "Dimension", "Enum", "Font", "Handle", "ImageData", "PlainText", "Point", "RichText", "RichTextArray", "ShadowStyle", "SnappingData", "StrokeStyle", "Outlet"];
 
-Util.isXul17OrLater = function() {
+Util.isXul17OrLater = function () {
     var version = Util.getXulrunnerVersion();
     var q = version.split("\.");
     if (q.length > 0) {
@@ -2188,7 +2198,7 @@ pencilSandbox.Console = Console;
 pencilSandbox.PencilNamespaces = PencilNamespaces;
 
 Util.importSandboxFunctions = function () {
-    for (var i = 0; i < arguments.length; i ++) {
+    for (var i = 0; i < arguments.length; i++) {
         var f = arguments[i];
         pencilSandbox[f.name] = f;
     }
@@ -2196,7 +2206,7 @@ Util.importSandboxFunctions = function () {
 Util.workOnListAsync = function (list, worker, callback) {
     var index = -1;
     var next = function () {
-        index ++;
+        index++;
         if (!list || index >= list.length) {
             if (callback) callback();
             return;
@@ -2211,7 +2221,7 @@ Util.compareVersion = function (version1, version2) {
     var a = version1.split(/\./);
     var b = version2.split(/\./);
 
-    for (var i = 0; i < Math.min(a.length, b.length); i ++) {
+    for (var i = 0; i < Math.min(a.length, b.length); i++) {
         var n1 = parseInt(a[i], 10);
         var n2 = parseInt(b[i], 10);
 
@@ -2231,7 +2241,7 @@ Util.compareVersion = function (version1, version2) {
 };
 
 
-function pEval (expression, extra, codeLocation) {
+function pEval(expression, extra, codeLocation) {
     var result = null;
 
     try {
@@ -2264,11 +2274,11 @@ function doLater(f, ms, win) {
     g();
 }
 
-function geo_translate (p, dx, dy) {
-    return {x: p.x + dx, y: p.y + dy};
+function geo_translate(p, dx, dy) {
+    return { x: p.x + dx, y: p.y + dy };
 };
-function geo_rotate (p, a) {
-    return {x: p.x * Math.cos(a) - p.y * Math.sin(a), y: p.x * Math.sin(a) + p.y * Math.cos(a)};
+function geo_rotate(p, a) {
+    return { x: p.x * Math.cos(a) - p.y * Math.sin(a), y: p.x * Math.sin(a) + p.y * Math.cos(a) };
 };
 
 /**
@@ -2294,55 +2304,55 @@ function geo_getRotatedPoint(p1, p2, d, a) {
 
     return p;
 };
-function geo_vectorLength (p1, p2) {
+function geo_vectorLength(p1, p2) {
     var dx = p1.x - p2.x;
     var dy = p1.y - p2.y;
 
     return Math.sqrt(dx * dx + dy * dy);
 };
 
-function geo_pointAngle (x, y) {
+function geo_pointAngle(x, y) {
     if (x == 0) return y > 0 ? Math.PI / 2 : 0 - Math.PI / 2;
     return Math.atan2(y, x);
 };
 
-function geo_vectorAngle (p1, p2, q1, q2) {
+function geo_vectorAngle(p1, p2, q1, q2) {
     return geo_pointAngle(q2.x - q1.x, q2.y - q1.y) - geo_pointAngle(p2.x - p1.x, p2.y - p1.y);
 };
 
 function geo_findIntersection(a1, b1, a2, b2) {
-	var x0 = a1.x;
-	var y0 = a1.y;
-	var a = b1.x - a1.x;
-	var b = b1.y - a1.y;
+    var x0 = a1.x;
+    var y0 = a1.y;
+    var a = b1.x - a1.x;
+    var b = b1.y - a1.y;
 
-	var x1 = a2.x;
-	var y1 = a2.y;
-	var c = b2.x - a2.x;
-	var d = b2.y - a2.y;
+    var x1 = a2.x;
+    var y1 = a2.y;
+    var c = b2.x - a2.x;
+    var d = b2.y - a2.y;
 
-	var u = d*a - c*b;
-	if (u == 0) return null;
+    var u = d * a - c * b;
+    if (u == 0) return null;
 
-	var t = (d*x1 - d*x0 - c*y1 + c*y0) / u;
-	return {
-		x: x0 + a*t,
-		y: y0 + b*t,
-	};
+    var t = (d * x1 - d * x0 - c * y1 + c * y0) / u;
+    return {
+        x: x0 + a * t,
+        y: y0 + b * t,
+    };
 }
 
 function geo_buildQuickSmoothCurve(points, inputControlLength) {
-	debug("geo_buildQuickSmoothCurve: points = " + points.length + ", controlLength: " + inputControlLength);
-	if (points.length != 4) {
-		return geo_buildSmoothCurve(points);
-		return;
-	}
+    debug("geo_buildQuickSmoothCurve: points = " + points.length + ", controlLength: " + inputControlLength);
+    if (points.length != 4) {
+        return geo_buildSmoothCurve(points);
+        return;
+    }
 
     var spec = [M(points[0].x, points[0].y)];
     var controlLength = Math.min(geo_vectorLength(points[0], points[3]) / 2, 60);
 
-    if (typeof(inputControlLength) != "undefined") {
-    	controlLength = Math.max(3 * inputControlLength, controlLength);
+    if (typeof (inputControlLength) != "undefined") {
+        controlLength = Math.max(3 * inputControlLength, controlLength);
     }
 
     debug("controlLength: " + controlLength);
@@ -2352,29 +2362,29 @@ function geo_buildQuickSmoothCurve(points, inputControlLength) {
 
     return spec;
 };
-function geo_buildSmoothCurve (points) {
+function geo_buildSmoothCurve(points) {
     var spec = [M(points[0].x, points[0].y)];
     var len = points.length;
     var lastAngle = null;
-    for (var i = 1; i < len; i ++) {
+    for (var i = 1; i < len; i++) {
         var p1 = points[i - 1];
         if (lastAngle != null) {
             p1 = geo_getRotatedPoint(points[i], points[i - 1],
-                                            geo_vectorLength(points[i], points[i - 1]) / 5,
-                                            angle
-                                            );
+                geo_vectorLength(points[i], points[i - 1]) / 5,
+                angle
+            );
         }
 
         var p2 = points[i];
         if (i < len - 1) {
-            var a = geo_vectorAngle(points[i], points[i- 1], points[i], points[i + 1]);
+            var a = geo_vectorAngle(points[i], points[i - 1], points[i], points[i + 1]);
             if (a < 0) a = Math.PI * 2 + a;
 
             angle = (Math.PI / 2 - Math.abs(a) / 2);
             p2 = geo_getRotatedPoint(points[i - 1], points[i],
-                                            geo_vectorLength(points[i], points[i - 1]) / 5,
-                                            0 - angle
-                                            );
+                geo_vectorLength(points[i], points[i - 1]) / 5,
+                0 - angle
+            );
             lastAngle = angle;
         }
 
@@ -2418,7 +2428,7 @@ function deleteFileOrFolder(p) {
         } else {
             fs.unlinkSync(p);
         }
-    } catch (e) {}
+    } catch (e) { }
 }
 
 
@@ -2459,7 +2469,7 @@ function copyFolderRecursiveSync(source, target) {
 }
 
 function PropertyMask(names) {
-    this.names = (typeof(names) == "string") ? [names] : names;
+    this.names = (typeof (names) == "string") ? [names] : names;
 }
 PropertyMask.prototype.and = function (other) {
     return new PropertyMask(this.names.concat.other.names);
@@ -2490,7 +2500,7 @@ function getStaticFilePath(subPath) {
     if (!subPath) return filePath;
 
     var parts = subPath.split("/");
-    for (var i = 0; i < parts.length; i ++) {
+    for (var i = 0; i < parts.length; i++) {
         filePath = path.join(filePath, parts[i]);
     }
 
@@ -2498,18 +2508,18 @@ function getStaticFilePath(subPath) {
 }
 
 function _before(before, fn) {
-  return function () {
-    before.apply(this, arguments);
-    return fn.apply(this, arguments);
-  };
+    return function () {
+        before.apply(this, arguments);
+        return fn.apply(this, arguments);
+    };
 }
 
 function _after(fn, after) {
-  return function () {
-    var result = fn.apply(this, arguments);
-    after.call(this, result);
-    return result;
-  };
+    return function () {
+        var result = fn.apply(this, arguments);
+        after.call(this, result);
+        return result;
+    };
 }
 
 function getRequiredValue(input, message, pattern) {
@@ -2548,7 +2558,7 @@ function sameList(a, b, comparer) {
 };
 function containsAll(a, b, comparer) {
     var c = comparer || sameId;
-    for (var i = 0; i < b.length; i ++) {
+    for (var i = 0; i < b.length; i++) {
         if (!contains(a, b[i], c)) return false;
     }
 
@@ -2557,7 +2567,7 @@ function containsAll(a, b, comparer) {
 function intersect(a, b, comparer) {
     if (!a || !b) return [];
     var items = [];
-    for (var i = 0; i < a.length; i ++) {
+    for (var i = 0; i < a.length; i++) {
         if (contains(b, a[i], comparer)) {
             items.push(a[i]);
         }
@@ -2567,7 +2577,7 @@ function intersect(a, b, comparer) {
 };
 
 function findItemByComparer(list, item, comparer) {
-    for (var i = 0; i < list.length; i ++) {
+    for (var i = 0; i < list.length; i++) {
         if (comparer(list[i], item)) return i;
     }
 
@@ -2575,7 +2585,7 @@ function findItemByComparer(list, item, comparer) {
 }
 function removeItemByComparer(list, item, comparer) {
     var result = [];
-    for (var i = 0; i < list.length; i ++) {
+    for (var i = 0; i < list.length; i++) {
         if (!comparer(list[i], item)) {
             result.push(list[i]);
         }
@@ -2584,7 +2594,7 @@ function removeItemByComparer(list, item, comparer) {
     return result;
 }
 function find(list, matcher) {
-    for (var i = 0; i < list.length; i ++) {
+    for (var i = 0; i < list.length; i++) {
         if (matcher(list[i])) return list[i];
     }
 
@@ -2595,9 +2605,9 @@ function findById(list, id) {
 }
 function _export() {
     var obj = {};
-    for (var i = 0; i < arguments.length; i ++) {
+    for (var i = 0; i < arguments.length; i++) {
         var f = arguments[i];
-        if (typeof(f) != "function") continue;
+        if (typeof (f) != "function") continue;
         obj[f.name] = f;
     }
 

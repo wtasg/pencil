@@ -1,15 +1,15 @@
-const fs = require("fs");
-const os = require("os");
-const path = require("path");
-const { test, expect } = require("@playwright/test");
-const {
+import fs from 'fs';
+import os from 'os';
+import path from 'path';
+import { test, expect } from '@playwright/test';
+import {
     closePencil,
     createNewDocument,
     getShapeCount,
     insertTaggedShape,
     launchPencil,
     suppressAppDialogs
-} = require("./helpers/pencil");
+} from './helpers/pencil';
 
 // ---------------------------------------------------------------------------
 // helpers
@@ -29,8 +29,8 @@ async function stubProgressJob(page) {
     await page.evaluate(() => {
         Util.beginProgressJob = function (jobName, starter) {
             starter({
-                onProgressUpdated: function () {},
-                onTaskDone: function () {}
+                onProgressUpdated: function () { },
+                onTaskDone: function () { }
             });
         };
     });
@@ -116,7 +116,7 @@ test("builds a stencil Definition.xml from a document with shapes", async () => 
         expect(xml).toContain('displayName="E2E Built Collection"');
     } finally {
         await closePencil(electronApp, page);
-        try { fs.rmSync(outputDir, { recursive: true, force: true }); } catch (_) {}
+        try { fs.rmSync(outputDir, { recursive: true, force: true }); } catch (_) { }
     }
 });
 
