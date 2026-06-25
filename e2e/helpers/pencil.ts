@@ -104,8 +104,8 @@ async function insertTaggedShape(page, tag, point) {
 
 async function getShapeCount(page) {
     return page.evaluate(() => {
-        return Array.from(Pencil.activeCanvas.drawingLayer.childNodes).filter(function (node: HTMLElement) {
-            return node.getAttributeNS && node.getAttributeNS(PencilNamespaces.p, "type") === "Shape";
+        return Array.from(Pencil.activeCanvas.drawingLayer.childNodes).filter((node): node is Element => {
+            return node instanceof Element && node.getAttributeNS(PencilNamespaces.p, "type") === "Shape";
         }).length;
     });
 }
