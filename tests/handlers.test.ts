@@ -198,9 +198,9 @@ describe('General Promise Patterns Used in Handlers', () => {
                 .catch(err => ({ error: err.message }));
         }
 
-        const result = await processFile('/tmp/test') as { path: string, step: number };
+        const result = await processFile('/tmp/test');
+        if ('error' in result) throw new Error(`Unexpected error: ${result.error}`);
         expect(result.step).toBe(2);
-    });
 
     test('Promise.all for multiple file operations', async () => {
         function mockReadFile(name) {
