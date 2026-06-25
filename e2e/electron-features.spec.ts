@@ -64,7 +64,7 @@ test("supports moving a shape on the canvas", async () => {
 
         const before = await getShapeBox(page, "drag-shape");
         await page.evaluate(() => {
-            const shape = document.querySelector('[data-e2e-shape="drag-shape"]');
+            const shape = document.querySelector('[data-e2e-shape="drag-shape"]') as SVGAElement;
             const box = shape.getBBox();
             const canvas = Pencil.activeCanvas;
             const event = {

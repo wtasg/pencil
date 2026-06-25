@@ -53,15 +53,15 @@ describe('Config', () => {
 
     test('set and get work correctly', () => {
         Config.set('testKey', 'testValue');
-        expect(Config.get('testKey')).toBe('testValue');
+        expect(Config.get('testKey', undefined)).toBe('testValue');
     });
 
     test('define sets default value only once', () => {
         Config.define('newKey', 'defaultValue');
-        expect(Config.get('newKey')).toBe('defaultValue');
+        expect(Config.get('newKey', undefined)).toBe('defaultValue');
 
         Config.set('newKey', 'modifiedValue');
         Config.define('newKey', 'defaultValue');
-        expect(Config.get('newKey')).toBe('modifiedValue');
+        expect(Config.get('newKey', undefined)).toBe('modifiedValue');
     });
 });

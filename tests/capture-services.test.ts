@@ -40,7 +40,7 @@ BaseCmdCaptureService.prototype.capture = function (options) {
             if (error) {
                 reject(error);
             } else {
-                resolve();
+                resolve(undefined);
             }
         });
     });
