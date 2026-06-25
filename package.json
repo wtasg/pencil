@@ -1,6 +1,6 @@
 {
   "name": "@wtasnorg/pencil",
-  "version": "2026.03.13-b001",
+  "version": "2026.06.25-b011",
   "author": "wtasg",
   "description": "An open-source GUI prototyping tool that is available for ALL platforms.",
   "repository": {
@@ -119,7 +119,7 @@
     "@playwright/test": "^1.61.1",
     "@types/electron": "^1.4.38",
     "@types/jest": "^30.0.0",
-    "@types/node": "^26.0.0",
+    "@types/node": "^26.0.1",
     "@typescript-eslint/eslint-plugin": "^8.62.0",
     "@typescript-eslint/parser": "^8.62.0",
     "electron": "^41.9.0",
