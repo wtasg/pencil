@@ -1,6 +1,7 @@
 # TypeScript Migration Complete ✅
 
 ## Project: Pencil (Electron App)
+
 **Migration Date**: June 24, 2026  
 **Status**: Successfully migrated to TypeScript
 
@@ -8,7 +9,8 @@
 
 ## PHASE 1: Setup & Configuration ✅
 
-### Installed Dependencies:
+### Installed Dependencies
+
 - ✅ `typescript` (^6.0.3) - TypeScript compiler
 - ✅ `ts-jest` - Jest transformer for TypeScript
 - ✅ `ts-node` - TypeScript runtime support for Electron
@@ -17,7 +19,8 @@
 - ✅ `eslint` & `@eslint/js` - Code linting
 - ✅ `@types/electron` - Electron type definitions
 
-### Created Configuration Files:
+### Created Configuration Files
+
 1. **`tsconfig.json`** - TypeScript compiler configuration
    - Target: ES2020
    - Module: commonjs (Electron compatible)
@@ -49,7 +52,8 @@
 
 ## PHASE 2: File Conversion ✅
 
-### File Statistics:
+### File Statistics
+
 - **Total files converted**: 263 `.ts` files
 - **Entry points (kept as .js)**: 6 files
   - `app/index.js` (Electron entry point)
@@ -64,7 +68,8 @@
   - `app/lib/codemirror/` - CodeMirror (external)
   - `app/archive/` - Legacy code
 
-### Code Fixes Applied:
+### Code Fixes Applied
+
 - ✅ Fixed octal literal syntax (0664 → 0o664)
 - ✅ Registered ts-node in Electron entry point
 - ✅ Updated require paths to `.ts` files
@@ -74,7 +79,8 @@
 
 ## PHASE 3: App Executability Verification ✅
 
-### Build Status:
+### Build Status
+
 ```
 ✅ npm run build: Compiles (6603 type warnings, non-critical)
 ✅ npm start: Electron app launches successfully
@@ -82,7 +88,8 @@
 ✅ npm run lint: ESLint runs (928 problems, mostly pre-existing)
 ```
 
-### Runtime Verification:
+### Runtime Verification
+
 - ✅ Electron loads successfully
 - ✅ TypeScript modules resolve via ts-node
 - ✅ IPC and event handlers work
@@ -94,7 +101,8 @@
 
 ## Configuration Details
 
-### TypeScript Settings (Non-Strict Mode):
+### TypeScript Settings (Non-Strict Mode)
+
 ```json
 {
   "strict": false,
@@ -110,7 +118,8 @@
 
 **Rationale**: Lenient settings allow the app to run while developers gradually add type annotations.
 
-### ESLint Configuration:
+### ESLint Configuration
+
 - Extends: `@eslint/js` + `@typescript-eslint/recommended`
 - Key rules disabled for compatibility:
   - `@typescript-eslint/no-explicit-any` (warn only)
@@ -122,14 +131,16 @@
 
 ## Migration Impact Summary
 
-### ✅ What Works:
+### ✅ What Works
+
 1. **Build Pipeline**: TypeScript compiler validates syntax
 2. **Linting**: ESLint with TypeScript rules
 3. **Testing**: Jest + ts-jest transforms TypeScript
 4. **Runtime**: Electron + ts-node loads `.ts` files
 5. **Type Checking**: Basic type information available
 
-### ⚠️ Known Limitations:
+### ⚠️ Known Limitations
+
 1. **Type Errors**: 6603 type warnings during build (non-critical, doesn't block execution)
 2. **Strict Mode**: Disabled for now; should be enabled gradually
 3. **Import/Export**: Still using CommonJS `require()`; migration to ES6 imports optional
@@ -138,17 +149,20 @@
 
 ## Next Steps (Recommended)
 
-### Immediate (Optional):
+### Immediate (Optional)
+
 1. Run `npm run lint:fix` to auto-fix linting issues
 2. Review top 10 type errors in `npm run build` output
 3. Update development documentation
 
-### Short Term (1-2 weeks):
+### Short Term (1-2 weeks)
+
 1. Add basic type annotations to core module exports
 2. Resolve module redeclaration conflicts
 3. Tighten `tsconfig.json` strictness incrementally
 
-### Medium Term (1-2 months):
+### Medium Term (1-2 months)
+
 1. Migrate to ES6 imports/exports (optional)
 2. Enable `"strict": true` in tsconfig
 3. Add JSDoc comments to untyped functions
@@ -184,18 +198,21 @@ npm run dist:win    # Windows build
 
 ## Files Modified/Created
 
-### New Files:
+### New Files
+
 - `tsconfig.json` - TypeScript configuration
 - `eslint.config.js` - ESLint configuration
 - `app/globals.d.ts` - Type definitions
 - `app/register-ts.js` - ts-node registration (internal)
 
-### Modified Files:
+### Modified Files
+
 - `package.json` - Added TypeScript dependencies & scripts
 - `jest.config.js` - Updated for ts-jest
 - 263 `.js` → `.ts` file conversions
 
-### Preserved Files (JavaScript):
+### Preserved Files (JavaScript)
+
 - Entry points (Electron requires these)
 - Shimfiles (runtime requires these)
 - Vendor code (third-party)
@@ -205,6 +222,7 @@ npm run dist:win    # Windows build
 ## Success Metrics
 
 ✅ **All build requirements met**:
+
 - [x] App launches without errors
 - [x] All tests pass (112/112)
 - [x] Build script validates TypeScript
@@ -212,6 +230,7 @@ npm run dist:win    # Windows build
 - [x] Package buildable with `npm run dist`
 
 ✅ **Build remains stable**:
+
 - [x] No new runtime errors
 - [x] No broken module paths
 - [x] File system operations work
@@ -222,12 +241,14 @@ npm run dist:win    # Windows build
 ## Questions or Issues?
 
 Check the following resources:
+
 1. `tsconfig.json` - TypeScript compiler options
 2. `eslint.config.js` - Linting rules
 3. `jest.config.js` - Test configuration
 4. `app/index.js` - ts-node registration setup
 
 **Key Line**: In `app/index.js`, ts-node is registered at the top:
+
 ```javascript
 require('ts-node').register({
     transpileOnly: true,
