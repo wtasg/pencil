@@ -1,7 +1,7 @@
 // Tests for async/await migrated code - verifying the patterns work correctly
 
 describe('Async/Await Patterns from Migration', () => {
-    
+
     describe('extractCollection pattern - async function with zip.extractAllToAsync', () => {
         test('async function wraps callback-based extraction', async () => {
             const mockZip = {
@@ -11,13 +11,13 @@ describe('Async/Await Patterns from Migration', () => {
             };
 
             async function extractCollection(file) {
-                return (async function() {
+                return (async function () {
                     const targetDir = '/tmp/test';
                     try {
-                        await new Promise(function(resolve, reject) {
-                            mockZip.extractAllToAsync(targetDir, true, function(err) {
+                        await new Promise(function (resolve, reject) {
+                            mockZip.extractAllToAsync(targetDir, true, function (err) {
                                 if (err) reject(err);
-                                else resolve();
+                                else resolve(undefined);
                             });
                         });
                         return targetDir;
@@ -40,13 +40,13 @@ describe('Async/Await Patterns from Migration', () => {
             };
 
             async function extractCollection(file) {
-                return (async function() {
+                return (async function () {
                     const targetDir = '/tmp/test';
                     try {
-                        await new Promise(function(resolve, reject) {
-                            mockZip.extractAllToAsync(targetDir, true, function(err) {
+                        await new Promise(function (resolve, reject) {
+                            mockZip.extractAllToAsync(targetDir, true, function (err) {
                                 if (err) reject(err);
-                                else resolve();
+                                else resolve(undefined);
                             });
                         });
                         return targetDir;
@@ -63,7 +63,7 @@ describe('Async/Await Patterns from Migration', () => {
     describe('installCollection pattern - async function with try/catch', () => {
         test('async function with try/catch for sync operations', async () => {
             async function installCollection(targetDir) {
-                return (async function() {
+                return (async function () {
                     try {
                         const definitionFile = targetDir + '/definition.xml';
                         if (!definitionFile) {
@@ -82,7 +82,7 @@ describe('Async/Await Patterns from Migration', () => {
 
         test('async function throws when definition not found', async () => {
             async function installCollection(targetDir) {
-                return (async function() {
+                return (async function () {
                     try {
                         const definitionFile = null;
                         if (!definitionFile) {
@@ -103,11 +103,11 @@ describe('Async/Await Patterns from Migration', () => {
             const existingCollections = [{ id: 'existing-collection' }];
 
             async function installCollection(targetDir) {
-                return (async function() {
+                return (async function () {
                     try {
                         const definitionFile = '/tmp/definition.xml';
                         const newCollection = { id: 'existing-collection' };
-                        
+
                         for (const existing of existingCollections) {
                             if (existing.id === newCollection.id) {
                                 throw new Error('collection.named.already.installed');
@@ -132,12 +132,12 @@ describe('Async/Await Patterns from Migration', () => {
             });
 
             async function loadCollections(url) {
-                return (async function() {
+                return (async function () {
                     try {
-                        await new Promise(function(resolve, reject) {
-                            mockNugget(url, {}, function(errors) {
+                        await new Promise(function (resolve, reject) {
+                            mockNugget(url, {}, function (errors) {
                                 if (errors) reject(errors[0]);
-                                else resolve();
+                                else resolve(undefined);
                             });
                         });
                         return { collections: [] };
@@ -158,11 +158,11 @@ describe('Async/Await Patterns from Migration', () => {
             });
 
             async function loadCollections(url) {
-                return (async function() {
-                    await new Promise(function(resolve, reject) {
-                        mockNugget(url, {}, function(errors) {
+                return (async function () {
+                    await new Promise(function (resolve, reject) {
+                        mockNugget(url, {}, function (errors) {
                             if (errors) reject(errors[0]);
-                            else resolve();
+                            else resolve(undefined);
                         });
                     });
                     return { collections: [] };
@@ -183,9 +183,9 @@ describe('Async/Await Patterns from Migration', () => {
             });
 
             async function loadCollections(url) {
-                return (async function() {
-                    await new Promise(function(resolve, reject) {
-                        mockNugget(url, {}, function(errors) {
+                return (async function () {
+                    await new Promise(function (resolve, reject) {
+                        mockNugget(url, {}, function (errors) {
                             if (errors) {
                                 const error = errors[0];
                                 if (error.message.indexOf('404') === -1) {
@@ -193,7 +193,7 @@ describe('Async/Await Patterns from Migration', () => {
                                 }
                                 return reject(error);
                             }
-                            resolve();
+                            resolve(undefined);
                         });
                     });
                     return { collections: [] };
@@ -216,12 +216,12 @@ describe('Async/Await Patterns from Migration', () => {
             });
 
             async function capture(options) {
-                return (async function() {
+                return (async function () {
                     const cmd = { path: '/bin/echo', args: ['test'] };
-                    await new Promise(function(resolve, reject) {
-                        mockExecFile(cmd.path, cmd.args, function(error) {
+                    await new Promise(function (resolve, reject) {
+                        mockExecFile(cmd.path, cmd.args, function (error) {
                             if (error) reject(error);
-                            else resolve();
+                            else resolve(undefined);
                         });
                     });
                 })();
@@ -237,12 +237,12 @@ describe('Async/Await Patterns from Migration', () => {
             });
 
             async function capture(options) {
-                return (async function() {
+                return (async function () {
                     const cmd = { path: '/bin/false', args: [] };
-                    await new Promise(function(resolve, reject) {
-                        mockExecFile(cmd.path, cmd.args, function(error) {
+                    await new Promise(function (resolve, reject) {
+                        mockExecFile(cmd.path, cmd.args, function (error) {
                             if (error) reject(error);
-                            else resolve();
+                            else resolve(undefined);
                         });
                     });
                 })();
@@ -254,18 +254,18 @@ describe('Async/Await Patterns from Migration', () => {
 
     describe('General async/await patterns', () => {
         test('IIFE async function returns a promise', () => {
-            const result = (async function() {
+            const result = (async function () {
                 return 'value';
             })();
-            
+
             expect(result).toBeInstanceOf(Promise);
         });
 
         test('async function with callback parameter', async () => {
             let callbackCalled = false;
-            
+
             async function operation(param, callback) {
-                return (async function() {
+                return (async function () {
                     try {
                         const result = param * 2;
                         if (callback) callback(null, result);
@@ -287,9 +287,9 @@ describe('Async/Await Patterns from Migration', () => {
 
         test('async function with callback on error', async () => {
             let errorCallbackCalled = false;
-            
+
             async function operation(param, callback) {
-                return (async function() {
+                return (async function () {
                     try {
                         throw new Error('test error');
                     } catch (err) {
@@ -302,7 +302,7 @@ describe('Async/Await Patterns from Migration', () => {
             await expect(operation(5, (err) => {
                 errorCallbackCalled = true;
             })).rejects.toThrow('test error');
-            
+
             expect(errorCallbackCalled).toBe(true);
         });
 
@@ -310,7 +310,7 @@ describe('Async/Await Patterns from Migration', () => {
             async function delay(ms) {
                 return new Promise(resolve => setTimeout(() => resolve(ms), ms));
             }
-            
+
             const results = await Promise.all([delay(10), delay(5), delay(15)]);
             expect(results).toEqual([10, 5, 15]);
         });
@@ -322,8 +322,8 @@ describe('Async/Await Patterns from Migration', () => {
                 })
             };
 
-            async function parseFile(filepath) {
-                return await new Promise(function(resolve) {
+            async function parseFile(filepath): Promise<{ data: any }> {
+                return await new Promise(function (resolve) {
                     mockParser.parseFile(filepath, (data) => {
                         resolve(data);
                     });

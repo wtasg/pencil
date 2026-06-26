@@ -6,6 +6,6 @@ test("launches Pencil main window", async () => {
 
     try {
     } finally {
-        await closePencil(electronApp);
+        await closePencil(electronApp, undefined);
     }
 });

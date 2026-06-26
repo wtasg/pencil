@@ -1,7 +1,7 @@
 // Test Q Promise Shim
 // Tests the Q-compatible shim using native Promises
 
-import Q from '../app/lib/q-shim';
+import Q from '../app/lib/q-shim.js';
 
 describe('Q Promise Shim', () => {
 
@@ -73,8 +73,13 @@ describe('Q Promise Shim', () => {
         expect(typeof deferred.reject).toBe('function');
     });
 
+    type D = {
+        promise: Promise<any>;
+        resolve: (a: any) => void;
+        reject: (b: any) => void;
+    };
     test('Q.defer resolve works', (done) => {
-        const deferred = Q.defer();
+        const deferred: D = Q.defer();
 
         deferred.promise.then(result => {
             expect(result).toBe('deferred value');
@@ -85,7 +90,7 @@ describe('Q Promise Shim', () => {
     });
 
     test('Q.defer reject works', (done) => {
-        const deferred = Q.defer();
+        const deferred: D = Q.defer();
 
         deferred.promise.catch(err => {
             expect(err).toBe('deferred error');

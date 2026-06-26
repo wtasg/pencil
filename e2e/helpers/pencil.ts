@@ -88,9 +88,11 @@ async function insertTaggedShape(page, tag, point) {
 
         Pencil.activeCanvas.insertShape(def, point || { x: 120, y: 120 });
 
-        var shapes = Array.from(Pencil.activeCanvas.drawingLayer.childNodes).filter(function (node) {
-            return node.getAttributeNS && node.getAttributeNS(PencilNamespaces.p, "type") === "Shape";
-        });
+        var shapes = Array.from(Pencil.activeCanvas.drawingLayer.childNodes)
+            .filter((node: Element): node is HTMLElement => {
+                return node.getAttributeNS &&
+                    node.getAttributeNS(PencilNamespaces.p, "type") === "Shape";
+            });
         var shape = shapes[shapes.length - 1];
         shape.setAttribute("data-e2e-shape", tag);
 
@@ -104,8 +106,8 @@ async function insertTaggedShape(page, tag, point) {
 
 async function getShapeCount(page) {
     return page.evaluate(() => {
-        return Array.from(Pencil.activeCanvas.drawingLayer.childNodes).filter(function (node) {
-            return node.getAttributeNS && node.getAttributeNS(PencilNamespaces.p, "type") === "Shape";
+        return Array.from(Pencil.activeCanvas.drawingLayer.childNodes).filter((node): node is Element => {
+            return node instanceof Element && node.getAttributeNS(PencilNamespaces.p, "type") === "Shape";
         }).length;
     });
 }
@@ -136,17 +138,17 @@ async function stubDialogs(page, paths) {
         if (typeof window !== 'undefined' && window.Pencil && window.Pencil.documentHandler) {
             // Override pickupTargetFileToSave to bypass the SAVE dialog entirely
             const originalPickup = window.Pencil.documentHandler.pickupTargetFileToSave;
-            window.Pencil.documentHandler.pickupTargetFileToSave = function(callback) {
+            window.Pencil.documentHandler.pickupTargetFileToSave = function (callback) {
                 console.log("[TEST] Stubbing pickupTargetFileToSave, returning:", paths.savePath);
                 // Call the callback immediately with our test path
                 if (callback) {
                     callback(paths.savePath);
                 }
             };
-            
+
             // Override openDocument to bypass the OPEN dialog entirely
             const originalOpen = window.Pencil.documentHandler.openDocument;
-            window.Pencil.documentHandler.openDocument = function(callback) {
+            window.Pencil.documentHandler.openDocument = function (callback) {
                 console.log("[TEST] Stubbing openDocument, using:", paths.openPath);
                 // Directly load the saved document
                 window.Pencil.documentHandler.loadDocument(paths.openPath, callback);
@@ -183,7 +185,7 @@ function makeTempDocumentPath(name) {
     return path.join(tempDir, name || "test-document.epgz");
 }
 
-module.exports = {
+export {
     closePencil,
     createNewDocument,
     getSelectedCount,
