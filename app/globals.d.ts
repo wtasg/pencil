@@ -49,7 +49,9 @@ declare type CollectionManager = {
         collections: Array<any>;
         shapeDefMap: Record<any, any>;
         shortcutMap: Record<any, any>;
-    }
+    };
+    adHocCollection: any;
+    loadAdHocCollection: (loadable: string) => void;
 };
 
 declare const CollectionManager: CollectionManager;
@@ -112,8 +114,48 @@ declare type UtilType = {
     workOnListAsync: any;
 };
 
+declare const Util: UtilType;
+
 declare type UICommandManager = {
     getCommand: (a: string) => { key: string, shortcut: string, run: () => void };
 };
 
 declare const UICommandManager: UICommandManager;
+
+declare type StencilCollectionBuilderOptions = {
+    displayName: string;
+    id: string;
+    author: string;
+    url: string;
+    description: string;
+    outputPath: string;
+    embedReferencedFonts: boolean;
+    resourceSets: Array<any>;
+}
+
+declare class StencilCollectionBuilder {
+    constructor(controller: any)
+    static isDocumentConfiguredAsStencilCollection(): boolean;
+    makeDefaultOptions: () => StencilCollectionBuilderOptions;
+    setCurrentDocumentOptions: (options: StencilCollectionBuilderOptions) => void;
+    static getCurrentDocumentOptions: () => StencilCollectionBuilderOptions;
+    buildImpl: (options: StencilCollectionBuilderOptions) => void;
+};
+
+declare type Dialog = {
+    alert: (message: string, extra: any, onClose: () => void) => void;
+    error: (message: string, extra: any, onClose: () => void) => void;
+    confirm: (
+        question: string,
+        extra: any,
+        posTitle: any,
+        onPos: () => void,
+        negTitle: string,
+        onNeg: () => void,
+        extraTitle: string,
+        onExtra: () => void
+    )
+        => void;
+};
+
+declare const Dialog: Dialog;
