@@ -88,10 +88,12 @@ async function insertTaggedShape(page, tag, point) {
 
         Pencil.activeCanvas.insertShape(def, point || { x: 120, y: 120 });
 
-        var shapes = Array.from(Pencil.activeCanvas.drawingLayer.childNodes).filter(function (node: HTMLElement) {
-            return node.getAttributeNS && node.getAttributeNS(PencilNamespaces.p, "type") === "Shape";
-        });
-        var shape = shapes[shapes.length - 1] as HTMLElement;
+        var shapes = Array.from(Pencil.activeCanvas.drawingLayer.childNodes)
+            .filter((node: Element): node is HTMLElement => {
+                return node.getAttributeNS &&
+                    node.getAttributeNS(PencilNamespaces.p, "type") === "Shape";
+            });
+        var shape = shapes[shapes.length - 1];
         shape.setAttribute("data-e2e-shape", tag);
 
         return {
